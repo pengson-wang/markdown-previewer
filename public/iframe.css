@@ -1,0 +1,17 @@
+body.previewer-loaded {
+  margin-right: 50vw;
+  min-width: unset !important;
+}
+
+#previewer {
+  position: fixed;
+  background-color: #fff;
+  z-index: 999;
+  top: 0;
+  right: 0;
+  width: 50vw;
+  max-width: 50vw;
+  height: 100vh;
+  border: none;
+  box-shadow: 0 0 2px silver;
+}

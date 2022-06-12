@@ -1,0 +1,166 @@
+import { Msg } from 'shared/msg'
+import { ReplaySubject } from 'rxjs'
+import { makeInputChangeMsg, makePathMsg, MessageHandler } from './mq'
+import previewer from './previewer'
+
+// const htmlURL = `http://localhost:3000`
+const htmlURL = chrome.runtime.getURL('iframe.html')
+const iframe = document.createElement('iframe')
+iframe.id = 'previewer'
+iframe.src = htmlURL
+iframe.style.visibility = 'hidden'
+document.body.parentElement?.appendChild(iframe)
+
+const mq$ = new ReplaySubject<Msg.Msg<any>>(10)
+const messageHandler = new MessageHandler(mq$, (msg) => iframe?.contentWindow?.postMessage(msg, '*'))
+
+// const editURLSchema = /^(https?:\/{2}[^\/]+)\/([^\/]+)\/([^\/]+)\/edit\/([^\/]+)/ //better to have option to ask user provide the branch name(when branch name has a '/' it is required)
+
+// const [_, host, owner, repo, branch] = location.href.match(editURLSchema) as [string, string, string, string, string]
+// const docPath /*suppose to be this path when published, use this to determ the relative link written in doc*/ = location.href.replace(
+//   editURLSchema,
+//   ''
+// )
+
+mq$.next(makePathMsg(location.href))
+
+// let isPushing = false
+
+// function startPushMessages() {
+//   isPushing = true
+//   // setInterval(() => {
+//   //   if (messages.length) {
+//   //     const message = messages.shift()
+//   //     iframe?.contentWindow?.postMessage(message, '*')
+//   //   }
+//   // }, 200)
+
+//   mq$.subscribe((msg) => {
+//     iframe?.contentWindow?.postMessage(msg, '*')
+//   })
+// }
+
+iframe.onload = function () {
+  console.info('Previewer Frame Loaded. Try loading Previewer ...')
+}
+
+const textarea = {
+  get current() {
+    return this._textarea
+  },
+  set current(value) {
+    if (value && value !== this._textarea) {
+      this._textarea = value
+      for (let eventName of this._listeners.keys()) {
+        const myOldListener = this._myListeners.get(eventName)
+        if (myOldListener) {
+          this._textarea.removeEventListener(eventName, myOldListener)
+        }
+      }
+
+      ;['click', 'change', 'keyup', 'keypress', 'keydown'].forEach((eventName) => {
+        let listeners = this._listeners.get(eventName)
+        if (!listeners) {
+          listeners = []
+          this._listeners.set(eventName, listeners)
+        }
+        const myListener = (e: Event) => {
+          listeners?.forEach((l) => l(e))
+        }
+        this._myListeners.set(eventName, myListener)
+        this._textarea.addEventListener(eventName, myListener)
+      })
+    }
+  },
+  addEventListener<K extends keyof HTMLElementEventMap>(eventName: K, listener: EventListener) {
+    const listeners = this._listeners.get(eventName)
+    if (!listeners) {
+      this._listeners.set(eventName, [listener])
+    } else {
+      listeners.push(listener)
+    }
+  },
+  removeEventListener<K extends keyof HTMLElementEventMap>(eventName: K, listener: EventListener) {
+    const listeners = this._listeners.get(eventName)
+    if (listeners && listeners.indexOf(listener) > -1) {
+      listeners.splice(listeners.indexOf(listener), 1)
+    }
+  },
+  _textarea: HTMLTextAreaElement.prototype,
+  _myListeners: new Map<string, EventListener>(),
+  _listeners: new Map<string, Array<EventListener>>(),
+}
+
+function handleInputChange(input: string) {
+  messageHandler.push(makeInputChangeMsg(input))
+}
+
+// keep deteck the first textarea until detected. If the right textarea is not the first one in the document, this might leads to a problem.
+function findTextarea() {
+  const win = window.parent || window
+  const target = win.document.querySelector('textarea')
+  if (target && target !== textarea.current) {
+    textarea.current = target
+    handleInputChange(textarea.current.value)
+    return
+  }
+  window.requestAnimationFrame(findTextarea)
+}
+window.requestAnimationFrame(findTextarea)
+
+textarea.addEventListener('change', (e) => {
+  handleInputChange((e?.target as HTMLTextAreaElement).value as string)
+})
+
+window.addEventListener('message', function (event) {
+  if (event.data) {
+    const { id, type, content } = event.data as Msg.Msg<any>
+    if (id && type.length) {
+      switch (type[1]) {
+        // Start the message handler (which will start pushing messages to the inframe) only when the iframe(actualy the app in the inframe) is loaded
+        case Msg.Category.IframeReady:
+          if (content as boolean) {
+            messageHandler.start()
+          }
+          return
+        default:
+          return
+      }
+    } else {
+      console.info(`Unknow message type ${type}`)
+    }
+  }
+})
+
+// enable previewer by default
+previewer.onSwitch()
+
+previewer.enabled.subscribe((value) => {
+  if (value) {
+    iframe.style.visibility = 'visible'
+    document.body.classList.add('previewer-loaded')
+    chrome.runtime.sendMessage({ type: 'enabled' })
+  } else {
+    iframe.style.visibility = 'hidden'
+    document.body.classList.remove('previewer-loaded')
+    chrome.runtime.sendMessage({ type: 'disabled' })
+  }
+})
+
+chrome.runtime.onMessage.addListener(function (request, _ /*sender*/, sendResponse) {
+  if (request.type === 'switch') {
+    previewer.onSwitch()
+  }
+  if (request.type === 'enabled') {
+    iframe.style.visibility = 'visible'
+    document.body.classList.add('previewer-loaded')
+    sendResponse({ active: true })
+  }
+})
+
+/* Send 'enable' command to background, background will then send 'enabled' signal back.
+ * After it is received, client will then send 'active' command to background, it then set 'on' tag on the icon of extension,
+ */
+// chrome.runtime.sendMessage({ type: 'enable' }, function (response) {
+//   console.log(response)
+// })
