@@ -1,18 +1,10 @@
 chrome.action.onClicked.addListener(function (tab) {
-  chrome.tabs.sendMessage(
-    tab.id as number,
-    { type: 'switch' }
-    // function (response) {
-    //   if (response) {
-    //     const active = response.active
-    //     if (active) {
-    //       chrome.action.setBadgeText({ text: 'on', tabId: tab.id })
-    //     } else {
-    //       chrome.action.setBadgeText({ text: '', tabId: tab.id })
-    //     }
-    //   }
-    // }
-  )
+  chrome.tabs.sendMessage(tab.id as number, { type: 'switch' }, function (response) {
+    if (response) {
+      console.log(`got response from tab[${tab.id}]`)
+      console.log(response)
+    }
+  })
 })
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {

@@ -6,7 +6,7 @@
 
 import urljoin from 'url-join'
 import base64 from 'base-64'
-import { getUsername, getPassword, getRepo, getBranch } from './getEnv'
+import { getUsername, getPassword } from './getEnv'
 
 const BASE = 'https://github.com'
 
@@ -50,7 +50,7 @@ export async function get(from: string, options?: Options) {
   })
 }
 
-export async function getRepoContents(path: string, repo: string = getRepo(), branch: string = getBranch()) {
+export async function getRepoContents(path: string, repo: string, branch: string) {
   return get(urljoin('/repos', repo, 'contents', path), {
     query: new URLSearchParams([['branch', branch]]),
     headers: { Accept: 'application/vnd.github.VERSION.raw' },
@@ -79,7 +79,7 @@ export interface Branch {
   }
 }
 
-export async function getBranches(repo: string = getRepo(), perPage = 30, page = 1) {
+export async function getBranches(repo: string, perPage = 30, page = 1) {
   return getJson<Branch[]>(urljoin('/repos', repo, 'branches'), {
     query: new URLSearchParams([
       ['per_page', perPage + ''],
@@ -88,12 +88,12 @@ export async function getBranches(repo: string = getRepo(), perPage = 30, page =
   })
 }
 
-export async function getFileContent(from: string, options?: Options) {
+export async function getFileContent(repo: string, from: string, options?: Options) {
   try {
     const body = await getJson<{
       content: string
       encoding: 'base64' | string
-    }>(urljoin('/repos', getRepo(), 'contents', from), options)
+    }>(urljoin('/repos', repo, 'contents', from), options)
     if (body.encoding === 'base64') {
       return base64.decode(body.content)
     } else {
@@ -115,13 +115,13 @@ export interface TreeNode {
 
 let _allTree: Array<TreeNode>
 
-export async function getTree(path?: string) {
+export async function getTree(repo: string, branch: string, path?: string) {
   if (!_allTree) {
     const resp = await getJson<{
       sha: string
       url: string
       tree: Array<TreeNode>
-    }>(urljoin('/repos', getRepo(), 'git/trees', getBranch()), { query: new URLSearchParams([['recursive', `true`]]) })
+    }>(urljoin('/repos', repo, 'git/trees', branch), { query: new URLSearchParams([['recursive', `true`]]) })
     _allTree = resp.tree
   }
   if (path) {

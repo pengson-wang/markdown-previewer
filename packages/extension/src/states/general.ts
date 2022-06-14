@@ -1,8 +1,7 @@
 import { nanoid } from 'nanoid'
-import { fromEvent, asyncScheduler, combineLatest, Observable } from 'rxjs'
+import { fromEvent, asyncScheduler, Observable } from 'rxjs'
 import { map, take, shareReplay, throttleTime, distinctUntilChanged, filter, tap } from 'rxjs/operators'
 import { Msg } from 'shared/msg'
-import { $branches } from './github'
 
 export function makeMsg<T>(type: Msg.Type, content: T) {
   return {
@@ -22,6 +21,10 @@ function isValidMsg(msg: any) {
 
 const $fromMsg = fromEvent(window, 'message').pipe(
   map((e) => (e as MessageEvent).data as Msg.Msg<any>),
+  tap((data) => {
+    console.log(`Received Message(Not verified):\n`)
+    console.log(data)
+  }),
   filter((data) => isValidMsg(data)),
   tap((data) => {
     console.log(`Received Message:\n`)
@@ -75,6 +78,9 @@ const $parent: Observable<Parent> = $fromMsg.pipe(
   shareReplay(1),
   take(1)
 )
+const $host = $parent.pipe(map((p) => p.host))
+const $owner = $parent.pipe(map((p) => p.owner))
+const $repo = $parent.pipe(map((p) => p.repo))
 
 // path is like {{branch_name}}{{file_path}}
 const $path = $parent.pipe(
@@ -82,57 +88,4 @@ const $path = $parent.pipe(
   tap((path) => console.log(`path=${path}`))
 )
 
-interface NameTree {
-  [p: string]: NameTree
-}
-
-const $branchNames = $branches.pipe(
-  filter((branches) => Boolean(branches) && branches.length > 0),
-  map((branches) => branches.map((branch) => branch.name)),
-  tap((names) => {
-    console.log(`branch list:\n`)
-    console.log(names)
-  }),
-  map((names) =>
-    names.reduce((a, c) => {
-      const segments = c.split('/').filter((p) => p)
-      let current = a
-      for (let segName of segments) {
-        if (!current[segName]) {
-          current[segName] = {}
-        }
-        current = current[segName]
-      }
-      return a
-    }, {} as NameTree)
-  ),
-  tap((nameTree) => console.log(nameTree))
-)
-
-// file path is the path without branch
-const $branch = combineLatest([$branchNames, $path]).pipe(
-  tap(([branchNames, path]) => {
-    console.log('Start log $branch...\nbranchNames:\n')
-    console.log(branchNames)
-    console.log(`path=${path}`)
-    console.log('End log $branch')
-  }),
-  map(([branchNames, path]) => {
-    // find the longest match from branch name to path, and that's is the current working branch
-
-    const pathSegs = path.split('/').filter((p) => p)
-    let i = 0
-
-    let branchSegs: string[] = []
-    let nameTree = branchNames
-    while (nameTree[pathSegs[i]]) {
-      branchSegs.push(pathSegs[i])
-      i++
-    }
-    return branchSegs.join('/')
-  })
-)
-
-const $fileRelativePath = combineLatest([$path, $branch]).pipe(map(([path, branch]) => path.replace(`${branch}/`, '')))
-
-export { $input, $path, $branchNames, $branch, $fileRelativePath }
+export { $input, $parent, $host, $owner, $repo, $path }

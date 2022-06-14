@@ -1,5 +1,5 @@
 {
-  "name": "Previewer",
+  "name": "Markdown Previewer",
   "version": "0.0.1",
   "manifest_version": 3,
   "description": "Markdown previewer for github",
@@ -11,9 +11,8 @@
     "128": "icon128.png"
   },
   "action": {
-    "default_icon": "favicon.png",
-    "default_title": "Previewer",
-    "default_popup": ""
+    "default_icon": "icon32.png",
+    "default_title": "MP"
   },
   "background": {
     "service_worker": "background.js"
@@ -31,7 +30,7 @@
       "matches": ["https://github.com/*"]
     }
   ],
-  "permissions": ["storage", "unlimitedStorage", "activeTab", "contextMenus", "tabs", "background", "clipboardRead", "clipboardWrite"],
+  "permissions": ["activeTab", "background", "storage"],
   "host_permissions": ["https://github.com/*"],
   "content_security_policy": {
     "script-src": "unsafe-eval localhost",

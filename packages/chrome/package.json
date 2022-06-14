@@ -8,7 +8,7 @@
     "prepare": "echo upgrade-shared && yarn upgrade shared"
   },
   "devDependencies": {
-    "@types/chrome": "^0.0.135",
+    "@types/chrome": "^0.0.190",
     "@types/url-join": "^4.0.0",
     "babel-loader": "^8.2.2",
     "webpack": "^5.35.1",

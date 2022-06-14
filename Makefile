@@ -1,6 +1,6 @@
 PATH := ./node_modules/.bin:${PATH}
 
-.PHONY: bootstrap cleanup public build/scripts/dev build/scripts sample_doc compile dev build deploy
+.PHONY: bootstrap cleanup public build/scripts/dev build/scripts sample_doc compile dev build@alpha build deploy
 
 bootstrap:
 	yarn install
@@ -25,6 +25,11 @@ build/scripts: cleanup public
 dev: build/scripts/dev
 	export NODE_ENV=development; \
 	npx lerna run start:iframe
+
+build@alpha: build/scripts/dev
+	export NODE_ENV=production; \
+	npx lerna run build:iframe
+	cp -R packages/extension/dist/* dist
 
 build: build/scripts
 	export NODE_ENV=production; \

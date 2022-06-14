@@ -3,7 +3,7 @@ import { ReplaySubject } from 'rxjs'
 import { makeInputChangeMsg, makePathMsg, MessageHandler } from './mq'
 import previewer from './previewer'
 
-// const htmlURL = `http://localhost:3000`
+//const htmlURL = `http://localhost:3000`
 const htmlURL = chrome.runtime.getURL('iframe.html')
 const iframe = document.createElement('iframe')
 iframe.id = 'previewer'
@@ -14,31 +14,7 @@ document.body.parentElement?.appendChild(iframe)
 const mq$ = new ReplaySubject<Msg.Msg<any>>(10)
 const messageHandler = new MessageHandler(mq$, (msg) => iframe?.contentWindow?.postMessage(msg, '*'))
 
-// const editURLSchema = /^(https?:\/{2}[^\/]+)\/([^\/]+)\/([^\/]+)\/edit\/([^\/]+)/ //better to have option to ask user provide the branch name(when branch name has a '/' it is required)
-
-// const [_, host, owner, repo, branch] = location.href.match(editURLSchema) as [string, string, string, string, string]
-// const docPath /*suppose to be this path when published, use this to determ the relative link written in doc*/ = location.href.replace(
-//   editURLSchema,
-//   ''
-// )
-
 mq$.next(makePathMsg(location.href))
-
-// let isPushing = false
-
-// function startPushMessages() {
-//   isPushing = true
-//   // setInterval(() => {
-//   //   if (messages.length) {
-//   //     const message = messages.shift()
-//   //     iframe?.contentWindow?.postMessage(message, '*')
-//   //   }
-//   // }, 200)
-
-//   mq$.subscribe((msg) => {
-//     iframe?.contentWindow?.postMessage(msg, '*')
-//   })
-// }
 
 iframe.onload = function () {
   console.info('Previewer Frame Loaded. Try loading Previewer ...')
@@ -111,6 +87,9 @@ window.requestAnimationFrame(findTextarea)
 textarea.addEventListener('change', (e) => {
   handleInputChange((e?.target as HTMLTextAreaElement).value as string)
 })
+textarea.addEventListener('keypress', (e) => {
+  handleInputChange((e?.target as HTMLTextAreaElement).value as string)
+})
 
 window.addEventListener('message', function (event) {
   if (event.data) {
@@ -148,6 +127,7 @@ previewer.enabled.subscribe((value) => {
 })
 
 chrome.runtime.onMessage.addListener(function (request, _ /*sender*/, sendResponse) {
+  console.log(`got resquest type=${request.type}`)
   if (request.type === 'switch') {
     previewer.onSwitch()
   }
