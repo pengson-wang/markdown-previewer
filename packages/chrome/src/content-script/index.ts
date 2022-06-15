@@ -100,6 +100,8 @@ window.addEventListener('message', function (event) {
         case Msg.Category.IframeReady:
           if (content as boolean) {
             messageHandler.start()
+            // enable previewer by default
+            previewer.enable()
           }
           return
         default:
@@ -110,9 +112,6 @@ window.addEventListener('message', function (event) {
     }
   }
 })
-
-// enable previewer by default
-previewer.onSwitch()
 
 previewer.enabled.subscribe((value) => {
   if (value) {
@@ -126,15 +125,26 @@ previewer.enabled.subscribe((value) => {
   }
 })
 
+// chrome.runtime.onMessage.addListener(function (request, _ /*sender*/, sendResponse) {
+//   console.log(`got resquest type=${request.type}`)
+//   sendResponse({
+//     received: true,
+//   })
+//   if (request.type === 'switch') {
+//     previewer.onSwitch()
+//   } else {
+//     console.log(`unknown request type [${request.type}]`)
+//   }
+// })
+
 chrome.runtime.onMessage.addListener(function (request, _ /*sender*/, sendResponse) {
   console.log(`got resquest type=${request.type}`)
   if (request.type === 'switch') {
-    previewer.onSwitch()
-  }
-  if (request.type === 'enabled') {
-    iframe.style.visibility = 'visible'
-    document.body.classList.add('previewer-loaded')
-    sendResponse({ active: true })
+    sendResponse({
+      received: true,
+    })
+    previewer.switch()
+    chrome.runtime.sendMessage({ type: previewer.isEnabled() ? 'enabled' : 'disabled' })
   }
 })
 

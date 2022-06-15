@@ -1,36 +1,26 @@
-chrome.action.onClicked.addListener(function (tab) {
+chrome.action.onClicked.addListener((tab) => {
+  console.log(`action got clicked within tab[${tab.id}]`)
   chrome.tabs.sendMessage(tab.id as number, { type: 'switch' }, function (response) {
+    console.log(`got response from tab[${tab.id}]`)
     if (response) {
-      console.log(`got response from tab[${tab.id}]`)
       console.log(response)
     }
   })
 })
 
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log(`got message from tab[${sender.tab?.id}]`)
   if (sender.tab) {
     const tabId = sender.tab.id
     const type = request.type
     switch (type) {
       case 'enabled':
-        // chrome.tabs.sendMessage(tabId as number, { type: 'enabled' }, function (response) {
-        //   if (response && response.active) {
-        //     chrome.action.setBadgeText({ text: 'on', tabId })
-        //   }
-        // })
         chrome.action.setBadgeText({ text: 'on', tabId })
         break
       case 'disabled':
-        // chrome.tabs.sendMessage(tabId as number, { type: 'enabled' }, function (response) {
-        //   if (response && response.active) {
-        //     chrome.action.setBadgeText({ text: 'on', tabId })
-        //   }
-        // })
         chrome.action.setBadgeText({ text: '', tabId })
       default:
         return
     }
   }
 })
-
-export {}

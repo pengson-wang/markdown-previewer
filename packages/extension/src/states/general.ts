@@ -59,6 +59,7 @@ interface Parent {
   path: string
 }
 
+//eslint-disable-next-line
 const editURLSchema = /^https?:\/{2}([^\/]+)\/([^\/]+)\/([^\/]+)\/edit\/([\w\W]+)/
 // editURL is like https//{{host}}/{{owner}}/{{repo}}/edit/{{branch_name}}
 // e.g. https://github.com/wangpin34/materials/edit/main/README.md
@@ -67,7 +68,7 @@ const $parent: Observable<Parent> = $fromMsg.pipe(
   filter(({ type }) => type[1] === Msg.Category.Path),
   map(({ content }) => content as string),
   map((href) => {
-    const [_, host, owner, repo, path] = href.match(editURLSchema) as [string, string, string, string, string]
+    const [, host, owner, repo, path] = href.match(editURLSchema) as [string, string, string, string, string]
     return {
       host,
       owner,

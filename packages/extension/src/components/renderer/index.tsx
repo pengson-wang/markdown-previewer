@@ -9,9 +9,10 @@ import remarkSlug from 'remark-slug'
 import remarkToc from 'remark-toc'
 import remarkGfm from 'remark-gfm'
 import remarkRehype from 'remark-rehype'
+import rehypeRaw from 'rehype-raw'
 import rehypeHighlight from 'rehype-highlight'
 import rehypeReact from 'rehype-react'
-import { P, H1, H2, CodeBlock, InlineCode, A, Blockquote, Table, Ol, Ul } from './elements'
+import { P, H1, H2, CodeBlock, InlineCode, A, Blockquote, Table, Ol, Ul, Image } from './elements'
 import { useObservable } from 'rxjs-hooks'
 import { $input } from 'states/general'
 import 'highlight.js/styles/github.css'
@@ -22,11 +23,26 @@ const processor = unified()
   .use(remarkGfm)
   .use(remarkSlug)
   .use(remarkToc)
-  .use(remarkRehype)
+  .use(remarkRehype, {
+    allowDangerousHtml: true,
+  })
+  .use(rehypeRaw)
   .use(rehypeHighlight)
   .use(rehypeReact, {
     createElement: React.createElement,
-    components: { a: A, blockquote: Blockquote, pre: CodeBlock, code: InlineCode, h1: H1, h2: H2, p: P, table: Table, ol: Ol, ul: Ul },
+    components: {
+      a: A,
+      blockquote: Blockquote,
+      pre: CodeBlock,
+      code: InlineCode,
+      h1: H1,
+      h2: H2,
+      p: P,
+      table: Table,
+      ol: Ol,
+      ul: Ul,
+      img: Image,
+    },
   })
 
 export default function Renderer() {

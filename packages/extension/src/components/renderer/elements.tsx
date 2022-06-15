@@ -1,3 +1,4 @@
+/** @jsxImportSource theme-ui */
 import React from 'react'
 
 interface ComponentProps {
@@ -24,7 +25,7 @@ function CodeBlock({ children }: ComponentProps) {
   return (
     <pre
       data-language={language}
-      style={{
+      sx={{
         backgroundColor: 'rgba(0,0,0,0.03)',
         border: '1px solid #f0f0f0',
         color: '#333',
@@ -32,16 +33,34 @@ function CodeBlock({ children }: ComponentProps) {
         lineHeight: '26px',
         fontSize: '14px',
         padding: '1em',
+        overflow: 'auto',
       }}>
       <code>{code}</code>
     </pre>
   )
 }
 
+interface ImageProps {
+  src: string
+  alt?: string
+}
+
+function Image({ src, alt }: ImageProps) {
+  return (
+    <img
+      src={src}
+      alt={alt}
+      sx={{
+        maxWidth: '100%',
+      }}
+    />
+  )
+}
+
 function H1({ children }: ComponentProps) {
   return (
     <h1
-      style={{
+      sx={{
         textAlign: 'center',
         color: '#3f3f3f',
         lineHeight: 1,
@@ -301,4 +320,4 @@ function Ul({ children }: ComponentProps) {
   )
 }
 
-export { P, H1, H2, CodeBlock, InlineCode, A, Blockquote, Table, Ol, Ul }
+export { P, H1, H2, CodeBlock, InlineCode, A, Blockquote, Table, Ol, Ul, Image }

@@ -5,8 +5,20 @@ class Previewer {
   constructor() {
     this.enabled = new BehaviorSubject<boolean>(false)
   }
-  onSwitch() {
+  switch() {
     this.enabled.next(!this.enabled.value)
+  }
+  enable() {
+    this.enabled.next(true)
+  }
+  disable() {
+    this.enabled.next(false)
+  }
+  isEnabled() {
+    return this.enabled.getValue()
+  }
+  isDisabled() {
+    return !this.enabled.getValue()
   }
 }
 
