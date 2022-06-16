@@ -35,7 +35,7 @@
       "matches": ["https://github.com/*"]
     }
   ],
-  "permissions": ["activeTab", "background", "storage", "tabs"],
+  "permissions": ["activeTab", "background"],
   "host_permissions": ["https://github.com/*"],
   "content_security_policy": {
     "script-src": "unsafe-eval localhost",

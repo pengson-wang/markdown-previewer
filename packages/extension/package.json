@@ -32,9 +32,9 @@
     "yaml": "^1.10.2"
   },
   "scripts": {
-    "start:iframe": "react-scripts start",
+    "start:iframe": "craco start",
     "build:iframe": "sh scripts/build.sh",
-    "test": "react-scripts test",
+    "test": "craco test",
     "eject": "react-scripts eject",
     "prepare": "echo upgrade-shared && yarn upgrade shared"
   },
@@ -51,6 +51,7 @@
     ]
   },
   "devDependencies": {
+    "@craco/craco": "^6.4.3",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",

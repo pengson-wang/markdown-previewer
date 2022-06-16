@@ -14,5 +14,8 @@
     "editor.defaultFormatter": "foxundermoon.shell-format"
   },
   "problems.decorations.enabled": true,
-  "outline.problems.badges": true
+  "outline.problems.badges": true,
+  "[shellscript]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  }
 }

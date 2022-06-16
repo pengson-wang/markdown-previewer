@@ -3,6 +3,10 @@ const path = require('path')
 module.exports = {
   mode: process.env.NODE_ENV ?? 'development',
   devtool: 'cheap-module-source-map',
+  optimization: {
+    chunkIds: 'named',
+    minimize: false,
+  },
   entry: {
     ['content-script']: './src/content-script/index.ts',
     background: './src/background/index.ts',

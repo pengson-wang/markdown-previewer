@@ -11,7 +11,7 @@ build() {
     export GENERATE_SOURCEMAP=true
 
     export PATH=node_modules/.bin:$PATH
-    react-scripts build
+    craco build
 
     mkdir -p dist
     cp -r build/* dist
