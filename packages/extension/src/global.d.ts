@@ -1,17 +1,13 @@
-/// <reference path="../node_modules/@types/react/index.d.ts"/>
-declare namespace React {
-  interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
-    name?: string
-  }
-  interface Attributes {
-    css?: CSSProp
-    [p?: string]: any
+import { CSSProp } from 'styled-components'
+
+declare module 'styled-components' {
+  export interface DefaultTheme {
+    // Your theme stuff here
   }
 }
 
-declare global {
-  namespace JSX {
-    // tslint:disable-next-line: no-empty-interface
-    interface IntrinsicAttributes extends SxProps {}
+declare module 'react' {
+  interface Attributes {
+    css?: CSSProp
   }
 }

@@ -1,8 +1,4 @@
-//@ts-nocheck
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx } from 'theme-ui'
-import React, { useMemo } from 'react'
+import React, { useMemo, ComponentType } from 'react'
 import { unified } from 'unified'
 import remarkParse from 'remark-parse'
 import remarkSlug from 'remark-slug'
@@ -31,17 +27,17 @@ const processor = unified()
   .use(rehypeReact, {
     createElement: React.createElement,
     components: {
-      a: A,
-      blockquote: Blockquote,
-      pre: CodeBlock,
-      code: InlineCode,
-      h1: H1,
-      h2: H2,
-      p: P,
-      table: Table,
-      ol: Ol,
-      ul: Ul,
-      img: Image,
+      a: A as ComponentType<JSX.IntrinsicElements['a']>,
+      blockquote: Blockquote as ComponentType<JSX.IntrinsicElements['blockquote']>,
+      pre: CodeBlock as ComponentType<JSX.IntrinsicElements['pre']>,
+      code: InlineCode as ComponentType<JSX.IntrinsicElements['strong']>,
+      h1: H1 as ComponentType<JSX.IntrinsicElements['h1']>,
+      h2: H2 as ComponentType<JSX.IntrinsicElements['h2']>,
+      p: P as ComponentType<JSX.IntrinsicElements['p']>,
+      table: Table as ComponentType<JSX.IntrinsicElements['table']>,
+      ol: Ol as ComponentType<JSX.IntrinsicElements['ol']>,
+      ul: Ul as ComponentType<JSX.IntrinsicElements['ul']>,
+      img: Image as ComponentType<JSX.IntrinsicElements['img']>,
     },
   })
 
@@ -53,10 +49,10 @@ export default function Renderer() {
   return (
     <div
       className="box-border"
-      sx={{
-        backgroundColor: '#fff',
-        padding: '40px',
-      }}>
+      css={`
+        background-color: #fff;
+        padding: 40px;
+      `}>
       {children}
     </div>
   )

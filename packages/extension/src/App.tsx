@@ -1,6 +1,3 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx, Container, Box } from 'theme-ui'
 import { useEffect } from 'react'
 import { sendReadySignal } from './states/general'
 import Renderer from 'components/renderer'
@@ -11,11 +8,14 @@ function App() {
     sendReadySignal()
   }, [])
   return (
-    <Container sx={{ width: '100%', height: '100vh' }}>
-      <Box sx={{ maxHeight: '100vh', overflow: 'auto', backgroundColor: '#fff' }}>
-        <Renderer />
-      </Box>
-    </Container>
+    <div
+      css={`
+        max-height: 100vh;
+        overflow: auto;
+        background-color: #fff;
+      `}>
+      <Renderer />
+    </div>
   )
 }
 

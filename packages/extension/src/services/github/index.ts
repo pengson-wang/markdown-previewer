@@ -6,9 +6,9 @@
 
 import urljoin from 'url-join'
 import base64 from 'base-64'
-import { getUsername, getPassword } from './getEnv'
+import { getUsername, getPassword } from './settings'
 
-const BASE = 'https://github.com'
+const BASE = 'https://api.github.com'
 
 interface Headers {
   [p: string]: string
@@ -18,7 +18,7 @@ let _baseHeaders: Headers
 function getHeaders(additionHeaders?: Headers) {
   if (!_baseHeaders) {
     _baseHeaders = {
-      Authorization: `Basic ${base64.encode(`${getUsername()}:${getPassword()}`)}`,
+      //Authorization: `Basic ${base64.encode(`${getUsername()}:${getPassword()}`)}`,
     }
   }
   return additionHeaders
@@ -39,7 +39,7 @@ export interface Options {
 }
 
 function makeURL(...parts: string[]) {
-  return new URL(urljoin('/api/v3', ...parts), BASE).toString()
+  return new URL(urljoin('', ...parts), BASE).toString()
 }
 
 export async function get(from: string, options?: Options) {

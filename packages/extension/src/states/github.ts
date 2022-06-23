@@ -10,14 +10,22 @@ $repo.subscribe(repo)
 
 const $branches = new ReplaySubject<Branch[]>(1)
 
-;(async () => {
-  try {
-    const branches = await getBranches(`${owner.getValue()}/${repo.getValue()}`)
-    $branches.next(branches)
-  } catch (err) {
-    console.warn('Failed to get the branch list')
-  }
-})()
+combineLatest([owner, repo])
+  .pipe(
+    filter(([owner, repo]) => !!owner && !!repo),
+    map(([owner, repo]) => `${owner}/${repo}`)
+  )
+  .subscribe((op) => {
+    ;(async () => {
+      try {
+        const branches = await getBranches(op)
+        $branches.next(branches)
+      } catch (err) {
+        console.error('failed to list branches')
+        console.error(err)
+      }
+    })()
+  })
 
 // const $tree = new ReplaySubject<Map<string, TreeNode>>(1)
 
@@ -80,4 +88,6 @@ const $branch = combineLatest([$branchNames, $path]).pipe(
 
 const $fileRelativePath = combineLatest([$path, $branch]).pipe(map(([path, branch]) => path.replace(`${branch}/`, '')))
 
-export { $branchNames, $fileRelativePath }
+const $filePath = combineLatest([$path, $branch]).pipe(map(([path, branch]) => path.replace(`${branch}`, '')))
+
+export { $branchNames, $branch, $fileRelativePath, $filePath }

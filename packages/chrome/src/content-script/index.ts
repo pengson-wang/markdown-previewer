@@ -3,8 +3,10 @@ import { ReplaySubject } from 'rxjs'
 import { makeInputChangeMsg, makePathMsg, MessageHandler } from './mq'
 import previewer from './previewer'
 
-//const htmlURL = `http://localhost:3000`
-const htmlURL = chrome.runtime.getURL('iframe.html')
+let htmlURL = chrome.runtime.getURL('iframe.html')
+if (process.env.NODE_ENV === 'development') {
+  htmlURL = `http://localhost:3000`
+}
 const iframe = document.createElement('iframe')
 iframe.id = 'previewer'
 iframe.src = htmlURL
@@ -125,18 +127,6 @@ previewer.enabled.subscribe((value) => {
   }
 })
 
-// chrome.runtime.onMessage.addListener(function (request, _ /*sender*/, sendResponse) {
-//   console.log(`got resquest type=${request.type}`)
-//   sendResponse({
-//     received: true,
-//   })
-//   if (request.type === 'switch') {
-//     previewer.onSwitch()
-//   } else {
-//     console.log(`unknown request type [${request.type}]`)
-//   }
-// })
-
 chrome.runtime.onMessage.addListener(function (request, _ /*sender*/, sendResponse) {
   console.log(`got resquest type=${request.type}`)
   if (request.type === 'switch') {
@@ -147,10 +137,3 @@ chrome.runtime.onMessage.addListener(function (request, _ /*sender*/, sendRespon
     chrome.runtime.sendMessage({ type: previewer.isEnabled() ? 'enabled' : 'disabled' })
   }
 })
-
-/* Send 'enable' command to background, background will then send 'enabled' signal back.
- * After it is received, client will then send 'active' command to background, it then set 'on' tag on the icon of extension,
- */
-// chrome.runtime.sendMessage({ type: 'enable' }, function (response) {
-//   console.log(response)
-// })
