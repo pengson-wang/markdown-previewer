@@ -1,5 +1,5 @@
 {
-  "name": "extension-app",
+  "name": "renderer",
   "version": "1.0.0",
   "private": true,
   "dependencies": {
@@ -29,7 +29,7 @@
     "yaml": "^1.10.2"
   },
   "scripts": {
-    "start:iframe": "craco start",
+    "start:iframe": "cross-env PORT=3006 craco start",
     "build:iframe": "sh scripts/build.sh",
     "test": "craco test",
     "eject": "react-scripts eject",

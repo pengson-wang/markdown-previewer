@@ -14,26 +14,25 @@ public:
 
 build/scripts/dev: cleanup public
 	export NODE_ENV=development; \
-	npx lerna run build
+	# pnpm run -r --if-present build
+	lerna run build
 	cp -R packages/chrome/dist/* dist
 
 build/scripts: cleanup public
 	export NODE_ENV=production; \
-	npx lerna run build
+	# pnpm run -r --if-present build
+	lerna run build
 	cp -R packages/chrome/dist/* dist
 
 dev: build/scripts/dev
 	export NODE_ENV=development; \
-	npx lerna run start:iframe
-
-build@alpha: build/scripts/dev
-	export NODE_ENV=production; \
-	npx lerna run build:iframe
-	cp -R packages/extension/dist/* dist
+	# pnpm run -r --if-present start:iframe
+	lerna run start:iframe
 
 build: build/scripts
 	export NODE_ENV=production; \
-	npx lerna run build:iframe
+	# pnpm run -r --if-present build:iframe
+  lerna run build:iframe
 	cp -R packages/extension/dist/* dist
 
 publish: build

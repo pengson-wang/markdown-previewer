@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { sendReadySignal } from './states/general'
-import Renderer from 'components/renderer'
+import Renderer from 'components/render-as-plugin'
 import './app.sass'
 
 function App() {
@@ -14,7 +14,7 @@ function App() {
         overflow: auto;
         background-color: #fff;
       `}>
-      <Renderer />
+      <Renderer url={`http://localhost:3006`} />
     </div>
   )
 }
