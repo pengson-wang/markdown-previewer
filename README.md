@@ -4,7 +4,7 @@
 
 # Roadmap
 
-- [ ] display images in the repo by its relative path
+- [x] display images in the repo according to its path not URL.
 - [ ] support [github emoji](https://github.com/ikatyang/emoji-cheat-sheet/blob/master/README.md)
 - [ ] private repo
 - [ ] mermaid chart
