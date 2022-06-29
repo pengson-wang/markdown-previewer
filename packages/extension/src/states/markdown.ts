@@ -2,11 +2,10 @@
  * resolved markdown, such as replace relative path of image as public url
  */
 
-import { $input, $owner, $repo } from './general'
-import { $filePath, $branch } from './github'
+import { $input } from './general'
+import { $filePath } from './github'
 import { BehaviorSubject, combineLatest } from 'rxjs'
 import { map } from 'rxjs/operators'
-import { link } from 'fs'
 
 // Internal link could be relative or absolute, ends with or without .md
 function computePath(path: string, pwd: string) {

@@ -33,7 +33,7 @@
     "build:iframe": "sh scripts/build.sh",
     "test": "craco test",
     "eject": "react-scripts eject",
-    "prepare": "echo upgrade-shared && pnpm upgrade shared"
+    "prepare": "echo upgrade-shared && yarn upgrade shared"
   },
   "browserslist": {
     "production": [

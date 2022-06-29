@@ -15,7 +15,6 @@ build() {
 
     mkdir -p dist
     cp -r build/* dist
-    cp dist/index.html dist/iframe.html
 }
 
 build

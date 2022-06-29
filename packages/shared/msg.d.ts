@@ -2,6 +2,7 @@ export module Msg {
   export enum From {
     Content,
     Iframe,
+    Renderer,
   }
   export enum Category {
     CMD,

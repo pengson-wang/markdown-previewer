@@ -1,11 +1,17 @@
 import Renderer from 'components/renderer'
-import { fromEvent } from 'rxjs'
-import { map, tap, filter, shareReplay } from 'rxjs/operators'
+import { animationFrames, combineLatest, fromEvent } from 'rxjs'
+import { map, tap, filter, shareReplay, distinctUntilChanged, throttleTime } from 'rxjs/operators'
 import { useObservable } from 'rxjs-hooks'
+import { Msg, makeMsg, InputMsgForRenderer } from 'shared'
 import './app.sass'
 
-function isValidMsg(data: any) {
-  return data['sender'] === 'previewer-host'
+function sendHeight() {
+  window?.parent?.postMessage(
+    makeMsg([Msg.From.Renderer, Msg.Category.General], {
+      height: document.body.scrollHeight,
+    }),
+    '*'
+  )
 }
 
 const fromMsg$ = fromEvent(window, 'message').pipe(
@@ -14,25 +20,41 @@ const fromMsg$ = fromEvent(window, 'message').pipe(
     console.log(`### Received Message(Not verified):\n`)
     console.log(data)
   }),
-  filter((data) => isValidMsg(data)),
+  filter((data) => {
+    const [from] = data.type as Msg.Type
+    return from === Msg.From.Iframe
+  }),
   tap((data) => {
     console.log(`Received Message:\n`)
     console.log(data)
   }),
-  shareReplay(10)
+  shareReplay(1)
 )
 
-const md$ = fromMsg$.pipe(
-  filter((data) => !!data && data.markdown),
-  map((data: any) => data.markdown as string)
+const inputMsg$ = fromMsg$.pipe(
+  filter((data) => {
+    const [_, category] = data.type as Msg.Type
+    return category === Msg.Category.InputChange
+  }),
+  map((data) => data.content as InputMsgForRenderer)
 )
+
+const md$ = inputMsg$.pipe(
+  map((data) => data.markdown),
+  distinctUntilChanged()
+)
+
+combineLatest([md$, animationFrames()])
+  .pipe(throttleTime(200))
+  .subscribe(() => {
+    sendHeight()
+  })
 
 function App() {
   const markdown = useObservable(() => md$, '### Markdown Previewer')
   return (
     <div
       css={`
-        max-height: 100vh;
         overflow: auto;
         background-color: #fff;
       `}>

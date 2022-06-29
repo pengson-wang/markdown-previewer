@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "webpack build",
-    "prepare": "echo upgrade-shared && pnpm upgrade shared"
+    "prepare": "echo upgrade-shared && yarn upgrade shared"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.190",

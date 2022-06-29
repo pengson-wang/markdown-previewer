@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid'
 import { fromEvent, asyncScheduler, Observable } from 'rxjs'
 import { map, take, shareReplay, throttleTime, distinctUntilChanged, filter, tap } from 'rxjs/operators'
-import { Msg } from 'shared/msg'
+import { Msg } from 'shared'
 
 export function makeMsg<T>(type: Msg.Type, content: T) {
   return {

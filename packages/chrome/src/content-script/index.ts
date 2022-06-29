@@ -1,9 +1,10 @@
-import { Msg } from 'shared/msg'
+import { Msg } from 'shared'
 import { ReplaySubject } from 'rxjs'
 import { makeInputChangeMsg, makePathMsg, MessageHandler } from './mq'
 import previewer from './previewer'
 
-let htmlURL = chrome.runtime.getURL('iframe.html')
+let htmlURL = chrome.runtime.getURL('extension/index.html')
+let nodeenv = `process.env.NODE_ENV=${process.env.NODE_ENV}`
 if (process.env.NODE_ENV === 'development') {
   htmlURL = `http://localhost:3000`
 }

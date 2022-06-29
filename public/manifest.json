@@ -31,7 +31,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["iframe.html", "static/**"],
+      "resources": ["extension/*", "renderer/*"],
       "matches": ["https://github.com/*"]
     }
   ],

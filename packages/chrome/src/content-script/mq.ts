@@ -1,4 +1,4 @@
-import { Msg } from 'shared/msg'
+import { Msg } from 'shared'
 import { Subject, Subscription } from 'rxjs'
 import { nanoid } from 'nanoid'
 
