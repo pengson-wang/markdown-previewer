@@ -9,8 +9,8 @@ chrome.action.onClicked.addListener((tab) => {
 })
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.log(`got message from tab[${sender.tab?.id}]`)
   if (sender.tab) {
+    console.log(`got message from tab[${sender.tab?.id}]`)
     const tabId = sender.tab.id
     const type = request.type
     switch (type) {

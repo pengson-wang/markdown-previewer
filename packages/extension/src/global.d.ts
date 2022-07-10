@@ -9,5 +9,6 @@ declare module 'styled-components' {
 declare module 'react' {
   interface Attributes {
     css?: CSSProp
+    markdown?: string
   }
 }

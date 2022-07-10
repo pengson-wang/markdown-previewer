@@ -10,6 +10,7 @@ export module Msg {
     Path,
     General,
     IframeReady,
+    Preferences,
   }
   export enum Phase {
     Request,

@@ -28,13 +28,6 @@
     "url-join": "^4.0.1",
     "yaml": "^1.10.2"
   },
-  "scripts": {
-    "start:iframe": "cross-env PORT=3006 craco start",
-    "build:iframe": "sh scripts/build.sh",
-    "test": "craco test",
-    "eject": "react-scripts eject",
-    "prepare": "echo upgrade-shared && yarn upgrade shared"
-  },
   "browserslist": {
     "production": [
       ">0.2%",

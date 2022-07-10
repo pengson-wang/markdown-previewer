@@ -1,31 +1,60 @@
-import { useEffect, useMemo, useState } from 'react'
-import { sendReadySignal } from './states/general'
-import Renderer from 'components/render-as-plugin'
+import Home from 'pages/home'
+import Preferences from 'pages/preferences'
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import 'states/send-msg' // active send-msg that sending msg back to content-script
+import Nav from 'react-bootstrap/Nav'
+import { NavLink } from 'react-router-dom'
 import './app.sass'
 
-function App() {
-  const pluginURL = useMemo(
-    () => (process.env.NODE_ENV === 'development' ? 'http://localhost:3006' : chrome.runtime.getURL('renderer/index.html')),
-    []
-  )
-  const [customPluginURL, setCustomPluginURL] = useState<string | null>(null)
-  useEffect(() => {
-    sendReadySignal()
-  }, [])
+function Toolbar() {
   return (
-    <div
+    <Nav
+      css={`
+        background-color: #ecf0fe;
+        position: fixed;
+        width: 100%;
+        height: 40px;
+        top: 0;
+        a {
+          text-decoration: none;
+          &.active {
+            font-weight: bold;
+            text-decoration: underline;
+          }
+        }
+      `}>
+      <Nav.Item>
+        <Nav.Link>
+          <NavLink to="/">Home</NavLink>
+        </Nav.Link>
+      </Nav.Item>
+      <Nav.Item>
+        <Nav.Link>
+          <NavLink to="/preferences">Preferences</NavLink>
+        </Nav.Link>
+      </Nav.Item>
+    </Nav>
+  )
+}
+
+export default function App() {
+  return (
+    <main
       css={`
         width: 100%;
         overflow: auto;
         background-color: #fff;
+        padding-top: 40px;
       `}>
-      <form>
-        <label>Custome Plugin URL</label>
-        <input type="text" name="url" onChange={(e) => setCustomPluginURL(e.target.value)} />
-      </form>
-      <Renderer url={customPluginURL || pluginURL} />
-    </div>
+      <BrowserRouter>
+        <Toolbar />
+        <Routes>
+          <Route path="/">
+            <Route index element={<Home />} />
+            <Route path="preferences" element={<Preferences />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </main>
   )
 }
-
-export default App

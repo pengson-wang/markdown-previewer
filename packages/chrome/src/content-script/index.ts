@@ -1,140 +1,106 @@
 import { Msg } from 'shared'
 import { ReplaySubject } from 'rxjs'
-import { makeInputChangeMsg, makePathMsg, MessageHandler } from './mq'
+import { makeInputChangeMsg, makePathMsg, MessageHandler, makeMsg } from './mq'
 import previewer from './previewer'
+import detectTextArea from './detect-text-area'
+import MyStorage from './storage'
 
-let htmlURL = chrome.runtime.getURL('extension/index.html')
-let nodeenv = `process.env.NODE_ENV=${process.env.NODE_ENV}`
-if (process.env.NODE_ENV === 'development') {
-  htmlURL = `http://localhost:3000`
-}
+// let htmlURL = chrome.runtime.getURL('extension/index.html')
+let htmlURL = process.env.RENDER_CONTAINER_URL!
 const iframe = document.createElement('iframe')
 iframe.id = 'previewer'
 iframe.src = htmlURL
 iframe.style.visibility = 'hidden'
 document.body.parentElement?.appendChild(iframe)
+iframe.onload = function () {
+  console.info('Previewer frame loaded. \nTry loading Previewer ...')
+}
 
 const mq$ = new ReplaySubject<Msg.Msg<any>>(10)
 const messageHandler = new MessageHandler(mq$, (msg) => iframe?.contentWindow?.postMessage(msg, '*'))
-
 mq$.next(makePathMsg(location.href))
+;(async () => {
+  const textarea = await detectTextArea()
+  messageHandler.push(makeInputChangeMsg(textarea.value))
+  textarea.addEventListener('change', (e) => {
+    messageHandler.push(makeInputChangeMsg((e.target as HTMLTextAreaElement).value))
+  })
+  textarea.addEventListener('keypress', (e: KeyboardEvent) => {
+    messageHandler.push(makeInputChangeMsg((e.target as HTMLTextAreaElement).value))
+  })
 
-iframe.onload = function () {
-  console.info('Previewer Frame Loaded. Try loading Previewer ...')
-}
+  const keys = {
+    preferences: 'preferences',
+  }
 
-const textarea = {
-  get current() {
-    return this._textarea
-  },
-  set current(value) {
-    if (value && value !== this._textarea) {
-      this._textarea = value
-      for (let eventName of this._listeners.keys()) {
-        const myOldListener = this._myListeners.get(eventName)
-        if (myOldListener) {
-          this._textarea.removeEventListener(eventName, myOldListener)
+  const storage = new MyStorage(false)
+
+  const setPreferences = async (preferences: any) => {
+    await storage.set(keys.preferences, preferences)
+  }
+
+  const getPreferences = async () => {
+    return await storage.get(keys.preferences)
+  }
+
+  const preferences = await getPreferences()
+  messageHandler.push(makeMsg([Msg.From.Content, Msg.Category.Preferences], preferences))
+
+  setInterval(() => {
+    ;(async () => {
+      const preferences = (await getPreferences()) ?? {}
+      console.log(`preferences:\n${JSON.stringify(preferences, null, 2)}`)
+    })()
+  }, 5000)
+
+  window.addEventListener('message', function (event) {
+    if (event.data) {
+      const { id, type, content } = event.data as Msg.Msg<any>
+      if (id && type.length) {
+        switch (type[1]) {
+          // Start the message handler (which will start pushing messages to the inframe) only when the iframe(actualy the app in the inframe) is loaded
+          case Msg.Category.IframeReady:
+            if (content as boolean) {
+              messageHandler.start()
+              // enable previewer by default
+              previewer.enable()
+            }
+            return
+          case Msg.Category.Preferences:
+            if (content) {
+              setPreferences(content).catch((err) => console.error(err))
+            } else {
+              console.warn('Preferences is empty for set')
+            }
+          default:
+            return
         }
+      } else {
+        console.info(`Unknow message type ${type}`)
       }
+    }
+  })
 
-      ;['click', 'change', 'keyup', 'keypress', 'keydown'].forEach((eventName) => {
-        let listeners = this._listeners.get(eventName)
-        if (!listeners) {
-          listeners = []
-          this._listeners.set(eventName, listeners)
-        }
-        const myListener = (e: Event) => {
-          listeners?.forEach((l) => l(e))
-        }
-        this._myListeners.set(eventName, myListener)
-        this._textarea.addEventListener(eventName, myListener)
+  previewer.enabled.subscribe((value) => {
+    if (value) {
+      iframe.style.visibility = 'visible'
+      document.body.classList.add('previewer-loaded')
+      chrome.runtime.sendMessage({ type: 'enabled' })
+    } else {
+      iframe.style.visibility = 'hidden'
+      document.body.classList.remove('previewer-loaded')
+      chrome.runtime.sendMessage({ type: 'disabled' })
+    }
+  })
+
+  chrome.runtime.onMessage.addListener(function (request, _ /*sender*/, sendResponse) {
+    console.log(`got resquest type=${request.type}`)
+    if (request.type === 'switch') {
+      sendResponse({
+        received: true,
       })
+      previewer.switch()
+      chrome.runtime.sendMessage({ type: previewer.isEnabled() ? 'enabled' : 'disabled' })
     }
-  },
-  addEventListener<K extends keyof HTMLElementEventMap>(eventName: K, listener: EventListener) {
-    const listeners = this._listeners.get(eventName)
-    if (!listeners) {
-      this._listeners.set(eventName, [listener])
-    } else {
-      listeners.push(listener)
-    }
-  },
-  removeEventListener<K extends keyof HTMLElementEventMap>(eventName: K, listener: EventListener) {
-    const listeners = this._listeners.get(eventName)
-    if (listeners && listeners.indexOf(listener) > -1) {
-      listeners.splice(listeners.indexOf(listener), 1)
-    }
-  },
-  _textarea: HTMLTextAreaElement.prototype,
-  _myListeners: new Map<string, EventListener>(),
-  _listeners: new Map<string, Array<EventListener>>(),
-}
-
-function handleInputChange(input: string) {
-  messageHandler.push(makeInputChangeMsg(input))
-}
-
-// keep deteck the first textarea until detected. If the right textarea is not the first one in the document, this might leads to a problem.
-function findTextarea() {
-  const win = window.parent || window
-  const target = win.document.querySelector('textarea')
-  if (target && target !== textarea.current) {
-    textarea.current = target
-    handleInputChange(textarea.current.value)
-    return
-  }
-  window.requestAnimationFrame(findTextarea)
-}
-window.requestAnimationFrame(findTextarea)
-
-textarea.addEventListener('change', (e) => {
-  handleInputChange((e?.target as HTMLTextAreaElement).value as string)
-})
-textarea.addEventListener('keypress', (e) => {
-  handleInputChange((e?.target as HTMLTextAreaElement).value as string)
-})
-
-window.addEventListener('message', function (event) {
-  if (event.data) {
-    const { id, type, content } = event.data as Msg.Msg<any>
-    if (id && type.length) {
-      switch (type[1]) {
-        // Start the message handler (which will start pushing messages to the inframe) only when the iframe(actualy the app in the inframe) is loaded
-        case Msg.Category.IframeReady:
-          if (content as boolean) {
-            messageHandler.start()
-            // enable previewer by default
-            previewer.enable()
-          }
-          return
-        default:
-          return
-      }
-    } else {
-      console.info(`Unknow message type ${type}`)
-    }
-  }
-})
-
-previewer.enabled.subscribe((value) => {
-  if (value) {
-    iframe.style.visibility = 'visible'
-    document.body.classList.add('previewer-loaded')
-    chrome.runtime.sendMessage({ type: 'enabled' })
-  } else {
-    iframe.style.visibility = 'hidden'
-    document.body.classList.remove('previewer-loaded')
-    chrome.runtime.sendMessage({ type: 'disabled' })
-  }
-})
-
-chrome.runtime.onMessage.addListener(function (request, _ /*sender*/, sendResponse) {
-  console.log(`got resquest type=${request.type}`)
-  if (request.type === 'switch') {
-    sendResponse({
-      received: true,
-    })
-    previewer.switch()
-    chrome.runtime.sendMessage({ type: previewer.isEnabled() ? 'enabled' : 'disabled' })
-  }
-})
+  })
+})()

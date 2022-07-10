@@ -19,7 +19,7 @@ function isValidMsg(msg: any) {
   return false
 }
 
-const $fromMsg = fromEvent(window, 'message').pipe(
+export const $fromMsg = fromEvent(window, 'message').pipe(
   map((e) => (e as MessageEvent).data as Msg.Msg<any>),
   tap((data) => {
     console.log(`Received Message(Not verified):\n`)
