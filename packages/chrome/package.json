@@ -1,0 +1,23 @@
+{
+  "name": "chrome",
+  "version": "2.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "webpack build",
+    "prepare": "echo upgrade-shared && yarn upgrade shared"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.190",
+    "@types/url-join": "^4.0.0",
+    "babel-loader": "^8.2.2",
+    "webpack": "^5.35.1",
+    "webpack-cli": "^4.6.0"
+  },
+  "dependencies": {
+    "nanoid": "^3.1.30",
+    "rxjs": "^7.4.0",
+    "shared": "2.0.0",
+    "url-join": "^4.0.1"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "name": "Markdown Previewer",
+  "version": "0.0.2",
+  "manifest_version": 3,
+  "description": "Markdown previewer for github",
+  "author": "pengson <guyusay@gmail.com>",
+  "icons": {
+    "16": "icon16.png",
+    "32": "icon32.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icon16.png",
+      "32": "icon32.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    },
+    "default_title": "Markdown Previewer"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://github.com/**/edit/*.md"],
+      "css": ["iframe.css"],
+      "js": ["content-script.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["extension/*", "renderer/*"],
+      "matches": ["https://github.com/*"]
+    }
+  ],
+  "permissions": ["activeTab", "background"],
+  "host_permissions": ["https://github.com/*"],
+  "content_security_policy": {
+    "script-src": "unsafe-eval localhost",
+    "object-src": "none"
+  }
+}
