@@ -35,14 +35,10 @@
       "matches": ["https://github.com/*"]
     }
   ],
-  "sandbox": {
-    "pages": ["extension/index.html"]
-  },
   "permissions": ["activeTab", "background", "storage"],
   "host_permissions": ["https://github.com/*"],
   "content_security_policy": {
-    "script-src": "unsafe-eval unsafe-inline localhost",
-    "object-src": "none",
-    "sandbox": "sandbox allow-scripts; script-src 'self' 'unsafe-eval' 'unsafe-inline'"
+    "script-src": "localhost",
+    "object-src": "none"
   }
 }

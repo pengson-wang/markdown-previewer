@@ -6,6 +6,9 @@ import { $input } from './general'
 import { $filePath } from './github'
 import { BehaviorSubject, combineLatest } from 'rxjs'
 import { map } from 'rxjs/operators'
+import { $owner, $repo } from './general'
+import { $branch } from './github'
+import { getRepoContents } from 'services/github/index'
 
 // Internal link could be relative or absolute, ends with or without .md
 function computePath(path: string, pwd: string) {
@@ -65,14 +68,28 @@ const isPublicURL = (src: string) => /^(https?:)?\/\//.test(src)
 
 const markdown$ = new BehaviorSubject<string>('')
 
-combineLatest([$input, $filePath])
+async function getProtectedImage(path: string, repo: string, branch: string) {
+  // Fetch the image.
+  const response = await getRepoContents(path, repo, branch)
+
+  if (response.status === 200) {
+    const blob = await response.blob()
+    const objectUrl = URL.createObjectURL(blob)
+    return objectUrl
+  }
+}
+
+combineLatest([$input, $filePath, $owner, $repo, $branch])
   .pipe(
-    map(([input, filePath]) => ({
+    map(([input, filePath, owner, repo, branch]) => ({
       input,
       filePath,
+      owner,
+      repo,
+      branch,
     }))
   )
-  .subscribe(({ input, filePath }) => {
+  .subscribe(({ input, filePath, owner, repo, branch }) => {
     ;(async () => {
       const links = Array.from(input.matchAll(imageRegex)).map(([, alt, src]) => ({ alt, src }))
       const pwd = filePath?.substring(0, filePath.lastIndexOf('/') + 1) as string
@@ -85,8 +102,8 @@ combineLatest([$input, $filePath])
             return { alt, src: linkMap.get(src), origin: src }
           }
           const imagePath = getAbsolutePath(src, pwd)
-          linkMap.set(src, imagePath)
-          return { alt, src: imagePath, origin: src }
+          const imageURL = await getProtectedImage(imagePath, `${owner}/${repo}`, branch)
+          return { alt, src: imageURL ?? imagePath, origin: src }
         })
       )
       // modifiy markdown
