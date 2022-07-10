@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from 'react'
 import { map } from 'rxjs/operators'
 import Card from 'react-bootstrap/Card'
+import Badge from 'react-bootstrap/Badge'
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
 import Form from 'react-bootstrap/Form'
@@ -11,7 +12,7 @@ import { plugins$, PluginProps, selectedPlugin$ } from 'states/preferences'
 
 function TimeLabel({ timestamp }: { timestamp: any }) {
   const date = useMemo(() => new Date(timestamp), [timestamp])
-  return <>{date.toLocaleString()}</>
+  return <>{`${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`}</>
 }
 
 const Edit = ({ size = 24, color = '#f5f5f5' }: any) => (
@@ -65,6 +66,7 @@ function IconBtn({ icon, ...rest }: { icon: any; [p: string]: any }) {
 function Plugin({
   id,
   name,
+  builtin,
   createdAt,
   updatedAt,
   handleEdit,
@@ -88,23 +90,29 @@ function Plugin({
       `}
       onClick={handleClick}>
       <Card.Body>
-        <Card.Title>
-          {name}
-          <IconBtn
-            onClick={(e: MouseEvent) => {
-              e.stopPropagation()
-              handleEdit()
-            }}
-            icon={<Edit color="#1abc9c" />}
-          />
-          <IconBtn
-            onClick={(e: MouseEvent) => {
-              e.stopPropagation()
-              handleDelete()
-            }}
-            icon={<Trash color="#c0392b" />}
-          />
-        </Card.Title>
+        <Card.Title>{name}</Card.Title>
+        <Card.Text>
+          {builtin ? (
+            <Badge bg="dark">builtin</Badge>
+          ) : (
+            <>
+              <IconBtn
+                onClick={(e: MouseEvent) => {
+                  e.stopPropagation()
+                  handleEdit()
+                }}
+                icon={<Edit color="#1abc9c" />}
+              />
+              <IconBtn
+                onClick={(e: MouseEvent) => {
+                  e.stopPropagation()
+                  handleDelete()
+                }}
+                icon={<Trash color="#c0392b" />}
+              />
+            </>
+          )}
+        </Card.Text>
         <Card.Text>
           {typeof updatedAt !== 'undefined' ? (
             <span>
@@ -311,7 +319,16 @@ export function Plugins() {
 export function App() {
   return (
     <div>
-      <h1>Plugin Manager</h1>
+      <h1>Plugins </h1>
+      <p>
+        <a href="" target="_blank">
+          What is plugin ?
+        </a>
+        <br />
+        <a href="" target="_blank">
+          Make you own plugin ?
+        </a>
+      </p>
       <Plugins />
     </div>
   )
