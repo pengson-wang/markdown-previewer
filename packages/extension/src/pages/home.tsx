@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react'
 import { combineLatest } from 'rxjs'
-import { distinctUntilChanged, map, filter } from 'rxjs/operators'
+import { distinctUntilChanged, map, filter, shareReplay } from 'rxjs/operators'
 import { sendReadySignal, $owner, $repo } from 'states/general'
 import { $branch } from 'states/github'
 import markdown$ from 'states/markdown'
@@ -54,7 +54,7 @@ class PluginsLoader {
 
 const pluginLoader = new PluginsLoader()
 
-const plugin$ = combineLatest([plugins$, selectedPlugin$.pipe(distinctUntilChanged())]).pipe(
+const plugin$ = combineLatest([plugins$.pipe(shareReplay(1)), selectedPlugin$.pipe(distinctUntilChanged(), shareReplay(1))]).pipe(
   map(([plugins, id]) => {
     return id ? plugins[id] : null
   }),
@@ -100,11 +100,7 @@ function Home() {
   }, [])
 
   return (
-    <div
-      id="renderer-box"
-      css={`
-        padding: 24px;
-      `}>
+    <div id="renderer-box">
       <Tag markdown={msg?.markdown} />
     </div>
   )

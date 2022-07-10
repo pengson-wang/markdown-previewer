@@ -48,12 +48,17 @@ export default function App() {
       `}>
       <BrowserRouter>
         <Toolbar />
-        <Routes>
-          <Route path="/">
-            <Route index element={<Home />} />
-            <Route path="preferences" element={<Preferences />} />
-          </Route>
-        </Routes>
+        <section
+          css={`
+            padding: 24px;
+          `}>
+          <Routes>
+            <Route path="/">
+              <Route index element={<Home />} />
+              <Route path="preferences" element={<Preferences />} />
+            </Route>
+          </Routes>
+        </section>
       </BrowserRouter>
     </main>
   )

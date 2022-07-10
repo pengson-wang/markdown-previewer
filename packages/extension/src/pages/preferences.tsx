@@ -277,7 +277,7 @@ export function Plugins() {
             </Button>
           </Modal.Footer>
         </Modal>
-        <Button onClick={handleCreate}>Create</Button>
+        <Button onClick={handleCreate}>Add</Button>
       </div>
       {pluginInEdit && pluginInEdit.id}
       {pluginInEdit ? (
@@ -321,12 +321,12 @@ export function App() {
     <div>
       <h1>Plugins </h1>
       <p>
-        <a href="" target="_blank">
+        <a rel="noreferrer" href="https://github.com/pengson-wang/markdown-previewer#plugin" target="_blank">
           What is plugin ?
         </a>
-        <br />
-        <a href="" target="_blank">
-          Make you own plugin ?
+        {'  '}
+        <a rel="noreferrer" href="https://github.com/pengson-wang/markdown-previewer#how-to-make-your-own-plugin" target="_blank">
+          Make your own.
         </a>
       </p>
       <Plugins />
