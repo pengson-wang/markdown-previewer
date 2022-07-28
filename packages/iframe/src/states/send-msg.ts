@@ -1,3 +1,7 @@
+/**
+ * Send msg to parent(content-script)
+ */
+
 import { Msg, makeMsg } from 'shared'
 import { preferences$ } from './preferences'
 

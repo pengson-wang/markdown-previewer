@@ -5,8 +5,11 @@ import previewer from './previewer'
 import detectTextArea from './detect-text-area'
 import MyStorage from './storage'
 
-// let htmlURL = chrome.runtime.getURL('extension/index.html')
-let htmlURL = process.env.RENDER_CONTAINER_URL!
+let htmlURL = chrome.runtime.getURL('iframe/index.html')
+if (process.env.NODE_ENV === 'development') {
+  htmlURL = 'http://localhost:3000'
+}
+
 const iframe = document.createElement('iframe')
 iframe.id = 'previewer'
 iframe.src = htmlURL

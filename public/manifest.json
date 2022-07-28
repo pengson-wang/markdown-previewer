@@ -1,6 +1,6 @@
 {
   "name": "Markdown Previewer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "manifest_version": 3,
   "description": "Markdown previewer for github",
   "author": "pengson <guyusay@gmail.com>",
@@ -31,7 +31,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["extension/*"],
+      "resources": ["iframe/*"],
       "matches": ["https://github.com/*"]
     }
   ],
