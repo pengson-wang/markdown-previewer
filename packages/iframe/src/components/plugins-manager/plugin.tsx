@@ -55,7 +55,7 @@ function EnableBtn({ id, enabled }: { id: string; enabled?: boolean }) {
       <IconButton
         ref={target}
         icon={enabled ? <CheckSquareIcon color="#3498db" size={16} /> : <SquareIcon color="grey" size={16} />}
-        onClick={() => enablePlugin(id)}
+        onClick={() => enablePlugin(enabled ? undefined : id)}
       />
     </OverlayTrigger>
   )

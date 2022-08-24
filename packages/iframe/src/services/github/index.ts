@@ -38,8 +38,12 @@ export interface Options {
   query?: URLSearchParams
 }
 
-function makeURL(...parts: string[]) {
+export function makeURL(...parts: string[]) {
   return new URL(urljoin('', ...parts), BASE).toString()
+}
+
+export function makeURLFromPath(path: string, owner: string, repo: string, branch: string) {
+  return `${urljoin('/repos', `${owner}/${repo}`, 'contents', path)}?branch=${branch}`
 }
 
 export async function get(from: string, options?: Options) {
