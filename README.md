@@ -17,10 +17,10 @@ Removed items such as `support of github emoji` because that the capability of r
 
 Since the security policy of Chrome Web Store the idea of plugin(using JavaScript) was abandoned. Instead, the extension is going to support css theme as plugin. I've put a theme at https://github.com/pengson-wang/markdown-css-themes and its url was saved in the extension as a built in plugin(I'm considering to change the label to theme) . When the extension is installed and you have enabled the plugin, the extension will try to download the content at that endpint and apply the style to the markdown.
 
-If you want to import any theme into the extension make sure you follow the rules as:
+If you want to import any theme into the extension make sure you follow the rules:
 
 1. the css selector should like https://github.com/pengson-wang/markdown-css-themes or https://github.com/sindresorhus/github-markdown-css. I'm planing to create a editor so that you can easiler verify if the css works as expected.
-2. Make sure the url you paste to the plugin are the directly url that offer the raw text. For example this https://raw.githubusercontent.com/pengson-wang/markdown-css-themes/main/themes/github.css is perfect. And https://github.com/pengson-wang/markdown-css-themes/blob/main/themes/github.css is not.
+2. Make sure the url you paste to the plugin are the directly url that offer the raw text. e.g. https://raw.githubusercontent.com/pengson-wang/markdown-css-themes/main/themes/github.css is perfect and https://github.com/pengson-wang/markdown-css-themes/blob/main/themes/github.css is ok as well(the previewer will resolve it as the raw url).
 
 # Plugin (Deprecated)
 
