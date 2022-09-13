@@ -61,6 +61,19 @@ export async function getRepoContents(path: string, repo: string, branch: string
   })
 }
 
+interface Props {
+  owner: string
+  repo: string
+  branch?: string
+}
+
+export async function getRepoContentsV1(path: string, { owner, repo, branch = 'main' }: Props) {
+  return get(urljoin(`/repos/${owner}/${repo}/contents`, path), {
+    query: new URLSearchParams([['branch', branch]]),
+    headers: { Accept: 'application/vnd.github.VERSION.raw' },
+  })
+}
+
 export async function getJson<T>(path: string, options?: Options) {
   try {
     const resp = await get(path, options)
