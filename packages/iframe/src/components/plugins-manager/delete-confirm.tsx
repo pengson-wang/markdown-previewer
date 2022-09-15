@@ -1,12 +1,22 @@
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
 
-export function PluginDeleteConfirm({ pluginName, onHide, onOk }: { pluginName: string; onHide: () => void; onOk: () => void }) {
+export default function PluginDeleteConfirm({
+  show,
+  name,
+  onHide,
+  onOk,
+}: {
+  show: boolean
+  name: string
+  onHide: () => void
+  onOk: () => void
+}) {
   return (
-    <Modal show onHide={onHide}>
+    <Modal show={show} onHide={onHide}>
       <Modal.Header closeButton>
         <Modal.Title>
-          Delete plugin <strong>{pluginName}</strong> ?
+          Are you absolutely sure to delete <strong>{name}</strong> ?
         </Modal.Title>
       </Modal.Header>
       <Modal.Footer>

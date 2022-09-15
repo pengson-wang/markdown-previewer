@@ -74,7 +74,7 @@ function MarkdownRenderer() {
   const markdown = useObservable(() => markdown$)
   const [style, setStyle] = useState<string>()
   const [failure, setFailure] = useState<string>()
-  const [highlight, setHighlight] = useState<string>('github.css')
+  const [highlight, setHighlight] = useState<string | null>('github.css')
 
   useEffect(() => {
     const subscription = plugin$.subscribe((plugin) => {
@@ -92,13 +92,13 @@ function MarkdownRenderer() {
         }
       }
       fetchPlugin()
-      plugin && setHighlight(plugin.highlight ?? 'github.css')
+      plugin ? setHighlight(plugin?.highlight ?? 'github.css') : setHighlight(null)
     })
     return () => subscription.unsubscribe()
   }, [])
   return (
     <>
-      <link rel="stylesheet" href={`./static/css/highlight.js/${highlight}`}></link>
+      {highlight ? <link rel="stylesheet" href={`./static/css/highlight.js/${highlight}`} /> : null}
       <style>{style ?? ''}</style>
       <div id="markdown-renderer" className="markdown markdown-body" style={{ padding: `16px 32px` }}>
         {markdown}

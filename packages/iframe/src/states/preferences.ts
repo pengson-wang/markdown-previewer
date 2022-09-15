@@ -89,5 +89,8 @@ export function removePlugin(id: string) {
     const all = plugins$.getValue()
     delete all[id]
     updatePlugins(all)
+    if (selectedPlugin$.getValue() === id) {
+      enablePlugin(null)
+    }
   }
 }
