@@ -35,7 +35,7 @@
     "yaml": "^1.10.2"
   },
   "scripts": {
-    "start:iframe": "craco start",
+    "start:iframe": "sh scripts/start.sh",
     "build:iframe": "sh scripts/build.sh",
     "publish": "npx gh-pages -d dist --dest renderer-container",
     "test": "craco test",

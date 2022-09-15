@@ -47,7 +47,7 @@ function EnableBtn({ id, enabled }: { id: string; enabled?: boolean }) {
   const target = useRef<HTMLButtonElement>(null)
   const renderTooltip = (props: any) => (
     <Tooltip id="button-tooltip" {...props}>
-      {enabled ? 'unselect' : 'select as the default renderer'}
+      {enabled ? 'Un-use this theme' : 'Use this theme'}
     </Tooltip>
   )
   return (
@@ -93,8 +93,8 @@ function Plugin({ plugin }: { plugin: PluginProps }) {
         `}>
         <div>{plugin.builtin ? <Badge bg="dark">Builtin</Badge> : null}</div>
         <div>
-          <EnableBtn id={plugin.id} enabled={isSelected} />
           {!plugin.builtin ? <IconButton icon={<TrashIcon color="#c0392b" size={16} />} onClick={() => removePlugin(plugin.id)} /> : null}
+          <EnableBtn id={plugin.id} enabled={isSelected} />
         </div>
       </div>
     </div>

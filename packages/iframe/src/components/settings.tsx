@@ -11,10 +11,10 @@ function IconButton({ icon, onClick, ...rest }: { icon: ReactNode; onClick: Reac
       css={`
         border: none;
         outline: none;
-        background-color: #3498db;
+        background-color: #c27c88;
         &:hover,
-        $:active {
-          background-color: #3498db;
+        &:active {
+          background-color: #ae6f7a;
         }
         position: fixed;
         right: 8px;
@@ -46,8 +46,8 @@ export default function Settings({ className }: { className?: string }) {
           <Offcanvas.Title>Settings</Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
-          <Tabs defaultActiveKey="plugins" id="uncontrolled-tab-example" className="mb-3">
-            <Tab eventKey="plugins" title="Plugins">
+          <Tabs defaultActiveKey="themes" id="uncontrolled-tab-example" className="mb-3">
+            <Tab eventKey="themes" title="Themes">
               <Preferences />
             </Tab>
           </Tabs>

@@ -10,7 +10,7 @@ import { useObservable } from 'rxjs-hooks'
 import md5 from 'md5'
 import AddPluginModal from './add'
 import Plugin from './plugin'
-import { pluginsObservable, PluginProps, selectedPluginObservable, createPlugin } from 'states/preferences'
+import { pluginsObservable, PluginProps, selectedPluginObservable, createPlugin, enablePlugin } from 'states/preferences'
 
 function anyDateToNumber(date: any) {
   const d = new Date(date)
@@ -24,13 +24,21 @@ const pluginsAsList$ = pluginsObservable.pipe(
 function Add() {
   const [show, setShow] = useState(false)
   const onHide = useCallback(() => setShow(false), [])
-  const onOk = useCallback(({ name, url, cover }: Pick<PluginProps, 'name' | 'url' | 'cover'>) => {
-    createPlugin({ name, url, cover })
-    setShow(false)
-  }, [])
+  const onOk = useCallback(
+    ({ name, url, cover, highlight, selected }: Pick<PluginProps, 'name' | 'url' | 'cover' | 'highlight'> & { selected: boolean }) => {
+      const id = createPlugin({ name, url, cover, highlight })
+      if (selected) {
+        enablePlugin(id)
+      }
+      setShow(false)
+    },
+    []
+  )
   return (
     <>
-      <Button onClick={() => setShow(true)}>Add</Button>
+      <Button onClick={() => setShow(true)} variant="primary">
+        Add
+      </Button>
       <AddPluginModal show={show} onHide={onHide} onOk={onOk} />
     </>
   )
@@ -47,7 +55,7 @@ export function Plugins() {
           display: flex;
           flex-wrap: wrap;
           padding: 24px 0;
-          [name='plugin'] {
+          [name='themes'] {
             &:nth-of-type(n + 1) {
               margin-right: 8px;
             }
@@ -67,12 +75,8 @@ export function App() {
       <Plugins />
       <hr />
       <p>
-        <a rel="noreferrer" href="https://github.com/pengson-wang/markdown-previewer#plugin" target="_blank">
-          What is plugin ?
-        </a>
-        {'  '}
-        <a rel="noreferrer" href="https://github.com/pengson-wang/markdown-previewer#how-to-make-your-own-plugin" target="_blank">
-          Make your own.
+        <a rel="noreferrer" href="https://github.com/pengson-wang/markdown-previewer#theme" target="_blank">
+          What is Theme ?
         </a>
       </p>
     </div>

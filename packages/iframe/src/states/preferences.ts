@@ -9,6 +9,7 @@ export interface PluginProps {
   readonly builtin?: boolean
   name: string
   url: string
+  highlight?: string
   readonly createdAt: number | string
   cover?: string
   updatedAt?: number | string
@@ -26,8 +27,8 @@ const builtInPlugins: Record<string, PluginProps> = {
     id: 'github',
     builtin: true,
     name: 'github',
-    url: 'https://raw.githubusercontent.com/pengson-wang/markdown-css-themes/main/themes/github.css',
-    cover: '#000',
+    url: 'https://github.com/pengson-wang/markdown-css-themes/blob/main/themes/github.css',
+    cover: '#26181b',
     createdAt: '2022/07/10',
   },
 }
@@ -62,9 +63,10 @@ export function enablePlugin(id?: string) {
   selectedPlugin$.next(id ?? null)
 }
 
-export function createPlugin({ name, url, cover }: Pick<PluginProps, 'name' | 'url' | 'cover'>) {
-  const plugin = { id: md5(url), name, url, cover, createdAt: Date.now() }
+export function createPlugin({ name, url, cover, highlight }: Pick<PluginProps, 'name' | 'url' | 'cover' | 'highlight'>) {
+  const plugin = { id: md5(url), name, url, cover, highlight, createdAt: Date.now() }
   plugins$.next({ ...plugins$.value, [plugin.id]: plugin })
+  return plugin.id
 }
 
 export function getPlugin(id: string) {

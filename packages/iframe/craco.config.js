@@ -23,6 +23,7 @@ module.exports = {
       optimization: {
         chunkIds: 'named',
         minimize: false,
+        // The Chrome Extension Admin prefer code without minimizer.
         // minimizer: [
         //   new TerserPlugin({
         //     terserOptions: {
