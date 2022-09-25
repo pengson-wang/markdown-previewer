@@ -59,7 +59,7 @@ export const preferences$ = combineLatest([plugins$, selectedPlugin$]).pipe(
   shareReplay(2)
 )
 
-export function enablePlugin(id?: string) {
+export function enablePlugin(id?: string | null) {
   selectedPlugin$.next(id ?? null)
 }
 
@@ -67,6 +67,25 @@ export function createPlugin({ name, url, cover, highlight }: Pick<PluginProps, 
   const plugin = { id: md5(url), name, url, cover, highlight, createdAt: Date.now() }
   plugins$.next({ ...plugins$.value, [plugin.id]: plugin })
   return plugin.id
+}
+
+interface ImportOptions {
+  replaceExists?: boolean
+}
+
+export function importPlugins(
+  plugins: Record<string, Pick<PluginProps, 'id' | 'name' | 'url' | 'cover' | 'highlight'>>,
+  options?: ImportOptions
+) {
+  const myPlugins: Record<string, PluginProps> = {}
+  for (const id in plugins) {
+    myPlugins[id] = { ...plugins[id], createdAt: Date.now() }
+  }
+  if (options?.replaceExists) {
+    plugins$.next({ ...plugins$.value, ...myPlugins })
+  } else {
+    plugins$.next({ ...myPlugins, ...plugins$.value })
+  }
 }
 
 export function getPlugin(id: string) {
@@ -77,8 +96,8 @@ function updatePlugins(plugins: Record<string, PluginProps>) {
   plugins$.next(plugins)
 }
 
-export function updatePlugin(id: string, { name, url }: Pick<PluginProps, 'name' | 'url'>) {
-  const plugin = { ...getPlugin(id), ...{ name, url, updatedAt: Date.now() } }
+export function updatePlugin(id: string, { name, url, cover, highlight }: Pick<PluginProps, 'name' | 'url' | 'cover' | 'highlight'>) {
+  const plugin = { ...getPlugin(id), ...{ name, url, cover, highlight, updatedAt: Date.now() } }
   updatePlugins({ ...plugins$.getValue(), [id]: plugin })
 }
 

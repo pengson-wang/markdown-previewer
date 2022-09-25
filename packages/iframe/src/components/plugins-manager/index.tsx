@@ -54,6 +54,7 @@ export function Plugins() {
         css={`
           display: flex;
           flex-wrap: wrap;
+          gap: 8px;
           padding: 24px 0;
           [name='themes'] {
             &:nth-of-type(n + 1) {

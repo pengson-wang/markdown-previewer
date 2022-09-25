@@ -4,44 +4,12 @@ import Tooltip from 'react-bootstrap/Tooltip'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import { useObservable } from 'rxjs-hooks'
 import TrashIcon from 'components/icons/trash-icon'
+import MoreVerticalIcon from 'components/icons/more-vertical'
 import { Square as SquareIcon, CheckSquare as CheckSquareIcon } from 'components/icons/square-icon'
-import { PluginProps, selectedPluginObservable, removePlugin, enablePlugin } from 'states/preferences'
+import { PluginProps, selectedPluginObservable, removePlugin, enablePlugin, updatePlugin } from 'states/preferences'
 import DeleteConfirm from './delete-confirm'
-
-function TimeLabel({ timestamp }: { timestamp: any }) {
-  const date = useMemo(() => new Date(timestamp), [timestamp])
-  return <>{`${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`}</>
-}
-
-const IconButton = forwardRef(
-  (
-    {
-      icon,
-      ...rest
-    }: {
-      icon: React.ReactNode
-      onClick?: React.MouseEventHandler<HTMLButtonElement>
-      onMouseEnter?: React.MouseEventHandler<HTMLButtonElement>
-      onMouseLeave?: React.MouseEventHandler<HTMLButtonElement>
-    },
-    ref: React.Ref<HTMLButtonElement>
-  ) => {
-    return (
-      <button
-        ref={ref}
-        {...rest}
-        css={`
-          width: 32px;
-          height: 24px;
-          background-color: transparent;
-          outline: none;
-          border: none;
-        `}>
-        {icon}
-      </button>
-    )
-  }
-)
+import Details from './details'
+import IconButton from 'components/icon-button'
 
 function EnableBtn({ id, enabled }: { id: string; enabled?: boolean }) {
   const target = useRef<HTMLButtonElement>(null)
@@ -65,6 +33,7 @@ function Plugin({ plugin }: { plugin: PluginProps }) {
   const selected = useObservable(() => selectedPluginObservable, null)
   const isSelected = useMemo(() => plugin.id === selected, [plugin, selected])
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false)
+  const [showDetailsDialog, setShowDetailsDialog] = useState<boolean>(false)
   return (
     <>
       <DeleteConfirm
@@ -72,6 +41,12 @@ function Plugin({ plugin }: { plugin: PluginProps }) {
         name={plugin.name}
         onHide={() => setShowDeleteConfirm(false)}
         onOk={() => removePlugin(plugin.id)}
+      />
+      <Details
+        show={showDetailsDialog}
+        plugin={plugin}
+        onHide={() => setShowDetailsDialog(false)}
+        onUpdate={(value: PluginProps) => updatePlugin(value.id, value)}
       />
       <div
         name="plugin"
@@ -105,6 +80,7 @@ function Plugin({ plugin }: { plugin: PluginProps }) {
               <IconButton icon={<TrashIcon color="#c0392b" size={16} />} onClick={() => setShowDeleteConfirm(true)} />
             ) : null}
             <EnableBtn id={plugin.id} enabled={isSelected} />
+            <IconButton icon={<MoreVerticalIcon size={16} />} onClick={() => setShowDetailsDialog(true)} />
           </div>
         </div>
       </div>
