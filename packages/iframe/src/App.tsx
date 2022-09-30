@@ -1,7 +1,7 @@
 import AnimatedRoutes from './AnimatedRoutes'
 import { activeSyncPreferences, deactiveSyncPreferences } from 'states/send-msg' // active send-msg that sending msg back to content-script
 import { useEffect } from 'react'
-import { BrowserRouter as Router } from 'react-router-dom'
+import { HashRouter as Router } from 'react-router-dom'
 import './app.sass'
 
 export default function App() {

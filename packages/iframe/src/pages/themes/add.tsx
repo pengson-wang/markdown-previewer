@@ -1,5 +1,5 @@
 import { useFormik } from 'formik'
-import React, { useCallback, useState, useRef, useEffect } from 'react'
+import React, { useCallback, useState } from 'react'
 import { TwitterPicker, ColorChangeHandler, ColorResult } from 'react-color'
 import * as yup from 'yup'
 import Button from 'react-bootstrap/Button'

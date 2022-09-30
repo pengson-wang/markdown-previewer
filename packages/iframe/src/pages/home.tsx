@@ -40,7 +40,7 @@ function Home() {
       exit={{ opacity: 1, transition: { duration: 0 } }}
       transition={{ duration: 0.3 }}>
       <Sidebar />
-      <div id="renderer-slot" ref={ref} css={``}></div>
+      <div id="renderer-slot" ref={ref}></div>
 
       <div
         css={`
