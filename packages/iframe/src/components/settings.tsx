@@ -3,7 +3,6 @@ import IconSettings from './icons/settings-icon'
 import Tab from 'react-bootstrap/Tab'
 import Tabs from 'react-bootstrap/Tabs'
 import Offcanvas from 'react-bootstrap/Offcanvas'
-import Preferences from './plugins-manager'
 
 function IconButton({ icon, onClick, ...rest }: { icon: ReactNode; onClick: React.MouseEventHandler }) {
   return (
@@ -48,7 +47,7 @@ export default function Settings({ className }: { className?: string }) {
         <Offcanvas.Body>
           <Tabs defaultActiveKey="themes" id="uncontrolled-tab-example" className="mb-3">
             <Tab eventKey="themes" title="Themes">
-              <Preferences />
+              <div>preferences</div>
             </Tab>
           </Tabs>
         </Offcanvas.Body>

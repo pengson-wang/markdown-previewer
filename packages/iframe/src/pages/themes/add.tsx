@@ -1,34 +1,40 @@
-import { useCallback, useState } from 'react'
-import { TwitterPicker, ColorChangeHandler, ColorResult } from 'react-color'
-import Modal from 'react-bootstrap/Modal'
-import Button from 'react-bootstrap/Button'
-import Form from 'react-bootstrap/Form'
-import { PluginProps } from 'states/preferences'
 import { useFormik } from 'formik'
+import React, { useCallback, useState, useRef, useEffect } from 'react'
+import { TwitterPicker, ColorChangeHandler, ColorResult } from 'react-color'
 import * as yup from 'yup'
-import styles from './add.module.sass'
+import Button from 'react-bootstrap/Button'
 import CloseButton from 'react-bootstrap/CloseButton'
-import IconButton from 'components/icon-button'
+import Modal from 'react-bootstrap/Modal'
+import Form from 'react-bootstrap/Form'
 import EditIcon from 'components/icons/edit-icon'
+import { PluginProps } from 'states/preferences'
+import IconButton from 'components/icon-button'
 import CheckIcon from 'components/icons/check-icon'
 import highlightThemes from 'constants/highlight-theme.json'
+import styles from './add.module.sass'
+
+export type Value = Pick<PluginProps, 'name' | 'url' | 'cover' | 'highlight'> & { selected: boolean }
 
 interface Props {
-  plugin: PluginProps
   show: boolean
   onHide: () => void
-  onUpdate: (p: PluginProps) => void
+  onOk: (v: Value) => void
 }
 
-export default function Details({ show, plugin, onHide, onUpdate }: Props) {
-  const { values, errors, dirty, isValid, handleSubmit, handleChange, setFieldValue, resetForm } = useFormik<PluginProps>({
-    initialValues: plugin,
+export default function Add({ show, onHide, onOk }: Props) {
+  const { values, errors, dirty, isValid, handleSubmit, handleChange, setFieldValue, resetForm, validateField } = useFormik<Value>({
+    initialValues: {
+      name: '',
+      url: '',
+      selected: false,
+      highlight: 'github.css',
+      cover: '#c27c88',
+    },
     validationSchema: yup.object({
       url: yup.string().url().required(),
     }),
     onSubmit: (values) => {
-      onUpdate(values)
-      onHide()
+      onOk(values)
       resetForm()
     },
   })
@@ -55,7 +61,6 @@ export default function Details({ show, plugin, onHide, onUpdate }: Props) {
         setShowColorPicker(false)
       }}
       contentClassName={styles.content}>
-      <pre>{JSON.stringify(values, null, 2)}</pre>
       <div
         css={`
           background-color: ${values.cover ?? '#000'};
@@ -123,6 +128,10 @@ export default function Details({ show, plugin, onHide, onUpdate }: Props) {
               onChange={(e) => {
                 e.persist()
                 handleChange(e)
+                setTimeout(() => {
+                  validateField('url')
+                }, 0)
+
                 if (!values.name) {
                   const url = e.target.value
                   const name = url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.css'))
@@ -133,7 +142,8 @@ export default function Details({ show, plugin, onHide, onUpdate }: Props) {
             <Form.Control.Feedback type="invalid">{errors.url}</Form.Control.Feedback>
           </Form.Group>
           <Form.Group>
-            <Form.Select name="highlight" value={values.highlight} aria-label="Default select example" onChange={handleChange}>
+            <Form.Label>Code Highlight</Form.Label>
+            <Form.Select name="highlight" value={values.highlight} aria-label="code highlight themes" onChange={handleChange}>
               {highlightThemes.map((h) => (
                 <option value={h.path}>{h.name}</option>
               ))}
@@ -186,7 +196,7 @@ export default function Details({ show, plugin, onHide, onUpdate }: Props) {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="light" onClick={handleHide}>
+          <Button variant="light" onClick={onHide}>
             Later
           </Button>
           <Button type="submit" variant="primary" disabled={!isValid}>

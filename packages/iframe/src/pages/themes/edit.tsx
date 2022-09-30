@@ -13,48 +13,29 @@ import CheckIcon from 'components/icons/check-icon'
 import highlightThemes from 'constants/highlight-theme.json'
 import styles from './add.module.sass'
 
-function usePrevious(value: unknown) {
-  const ref = useRef<unknown>()
-  useEffect(() => {
-    ref.current = value //assign the value of ref to the argument
-  }, [value]) //this code will run when the value of 'value' changes
-  return ref.current //in the end, return the current ref value.
-}
-
-function useChanged(value: unknown) {
-  const previous = usePrevious(value)
-  const [changed, setChanged] = useState<boolean>(false)
-  useEffect(() => {
-    if (value !== previous) {
-      setChanged(true)
-    }
-  }, [value, previous])
-  return changed
-}
-
-type Value = Pick<PluginProps, 'name' | 'url' | 'cover' | 'highlight'> & { selected: boolean }
+export type Value = Pick<PluginProps, 'name' | 'url' | 'cover' | 'highlight'>
 
 interface Props {
   show: boolean
+  theme: PluginProps
   onHide: () => void
   onOk: (v: Value) => void
 }
 
-export default function Add({ show, onHide, onOk }: Props) {
-  const { values, errors, dirty, isValid, handleSubmit, handleChange, setFieldValue, resetForm } = useFormik<Value>({
+export default function Edit({ show, theme, onHide, onOk }: Props) {
+  const { values, errors, isValid, handleSubmit, handleChange, setFieldValue, resetForm } = useFormik<Value>({
     initialValues: {
-      name: '',
-      url: '',
-      selected: false,
-      highlight: 'github',
-      cover: '#c27c88',
+      name: theme.name,
+      url: theme.url,
+      highlight: theme.highlight,
+      cover: theme.cover,
     },
     validationSchema: yup.object({
       url: yup.string().url().required(),
     }),
     onSubmit: (values) => {
       onOk(values)
-      resetForm()
+      onHide()
     },
   })
   const [showColorPicker, setShowColorPicker] = useState<boolean>(false)
@@ -94,7 +75,7 @@ export default function Add({ show, onHide, onOk }: Props) {
             font-size: 24px;
             line-height: 134px;
           `}>
-          Choose a Cover
+          Change the Cover
         </h1>
         <CloseButton
           variant="white"
@@ -157,7 +138,8 @@ export default function Add({ show, onHide, onOk }: Props) {
             <Form.Control.Feedback type="invalid">{errors.url}</Form.Control.Feedback>
           </Form.Group>
           <Form.Group>
-            <Form.Select name="highlight" aria-label="Default select example" onChange={handleChange}>
+            <Form.Label>Code Highlight</Form.Label>
+            <Form.Select name="highlight" value={values.highlight} aria-label="code highlight themes" onChange={handleChange} size="sm">
               {highlightThemes.map((h) => (
                 <option value={h.path}>{h.name}</option>
               ))}
@@ -169,11 +151,11 @@ export default function Add({ show, onHide, onOk }: Props) {
               display: grid;
               grid-template-columns: 1fr 1fr 1fr;
             `}>
-            {dirty && !errors.url ? (
+            {!errors.url ? (
               <>
-                <Form.Check type="checkbox" label="enabled" name="selected" onChange={handleChange} />
                 {editName ? (
                   <>
+                    <Form.Label>Name</Form.Label>
                     <Form.Control
                       placeholder={values.name}
                       aria-label="theme-name"
@@ -214,7 +196,7 @@ export default function Add({ show, onHide, onOk }: Props) {
             Later
           </Button>
           <Button type="submit" variant="primary" disabled={!isValid}>
-            Add
+            Submit
           </Button>
         </Modal.Footer>
       </Form>

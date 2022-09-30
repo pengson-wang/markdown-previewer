@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useRef, forwardRef } from 'react'
+import { useNavigate } from 'react-router'
 import Badge from 'react-bootstrap/Badge'
 import Tooltip from 'react-bootstrap/Tooltip'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
@@ -8,7 +9,6 @@ import MoreVerticalIcon from 'components/icons/more-vertical'
 import { Square as SquareIcon, CheckSquare as CheckSquareIcon } from 'components/icons/square-icon'
 import { PluginProps, selectedPluginObservable, removePlugin, enablePlugin, updatePlugin } from 'states/preferences'
 import DeleteConfirm from './delete-confirm'
-import Details from './details'
 import IconButton from 'components/icon-button'
 
 function EnableBtn({ id, enabled }: { id: string; enabled?: boolean }) {
@@ -30,10 +30,10 @@ function EnableBtn({ id, enabled }: { id: string; enabled?: boolean }) {
 }
 
 function Plugin({ plugin }: { plugin: PluginProps }) {
+  const navigate = useNavigate()
   const selected = useObservable(() => selectedPluginObservable, null)
   const isSelected = useMemo(() => plugin.id === selected, [plugin, selected])
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false)
-  const [showDetailsDialog, setShowDetailsDialog] = useState<boolean>(false)
   return (
     <>
       <DeleteConfirm
@@ -41,12 +41,6 @@ function Plugin({ plugin }: { plugin: PluginProps }) {
         name={plugin.name}
         onHide={() => setShowDeleteConfirm(false)}
         onOk={() => removePlugin(plugin.id)}
-      />
-      <Details
-        show={showDetailsDialog}
-        plugin={plugin}
-        onHide={() => setShowDetailsDialog(false)}
-        onUpdate={(value: PluginProps) => updatePlugin(value.id, value)}
       />
       <div
         name="plugin"
@@ -80,7 +74,7 @@ function Plugin({ plugin }: { plugin: PluginProps }) {
               <IconButton icon={<TrashIcon color="#c0392b" size={16} />} onClick={() => setShowDeleteConfirm(true)} />
             ) : null}
             <EnableBtn id={plugin.id} enabled={isSelected} />
-            <IconButton icon={<MoreVerticalIcon size={16} />} onClick={() => setShowDetailsDialog(true)} />
+            <IconButton icon={<MoreVerticalIcon size={16} />} onClick={() => navigate(plugin.id)} />
           </div>
         </div>
       </div>

@@ -1,10 +1,12 @@
-import ReactDOM from 'react-dom'
+import * as ReactDOM from 'react-dom/client'
 import { useEffect, useRef, useMemo } from 'react'
 import { sendReadySignal } from 'states/general'
 import { useObservable } from 'rxjs-hooks'
 import Dropdown from 'react-bootstrap/Dropdown'
+import Sidebar from 'components/sidebar'
 import { pluginsObservable, enablePlugin } from 'states/preferences'
 import MarkdownRenderer, { plugin$ } from 'components/markdown'
+import { motion } from 'framer-motion'
 
 function Home() {
   const ref = useRef<HTMLDivElement>(null)
@@ -20,20 +22,25 @@ function Home() {
     if (ref.current) {
       const el = ref.current
       const shadow = el.attachShadow({ mode: 'open' })
-      const root = document.createElement('div')
-      shadow.appendChild(root)
-      ReactDOM.render(<MarkdownRenderer />, root)
+      const dom = document.createElement('div')
+      shadow.appendChild(dom)
+      const root = ReactDOM.createRoot(dom)
+      root.render(<MarkdownRenderer />)
     }
   }, [ref])
 
   return (
-    <div>
-      <div
-        id="renderer-slot"
-        ref={ref}
-        css={`
-          padding: 24px 16px;
-        `}></div>
+    <motion.section
+      name="home"
+      css={`
+        padding-right: 32px;
+      `}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 1, transition: { duration: 0 } }}
+      transition={{ duration: 0.3 }}>
+      <Sidebar />
+      <div id="renderer-slot" ref={ref} css={``}></div>
 
       <div
         css={`
@@ -63,7 +70,7 @@ function Home() {
           </Dropdown>
         </div>
       </div>
-    </div>
+    </motion.section>
   )
 }
 

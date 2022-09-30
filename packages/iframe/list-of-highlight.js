@@ -30,8 +30,9 @@ async function listCssFrom(filepath) {
     const filesAsRelative = files.map((f) => path.relative(dir, f)).map((f) => f.replace(/\\/gi, '/'))
     const json = filesAsRelative.map((f) => ({
       path: f,
-      name: path
-        .basename(f)
+      name: f
+        // .relative(dir, f)
+        // .replaceAll(/[\\]+/g, ' ')
         .replace(/(\.css|-)/gi, ' ')
         .trim(),
     }))
