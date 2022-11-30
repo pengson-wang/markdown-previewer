@@ -23,6 +23,7 @@ module.exports = {
       optimization: {
         chunkIds: 'named',
         minimize: false,
+        // The Chrome Extension Admin prefer code without minimizer.
         // minimizer: [
         //   new TerserPlugin({
         //     terserOptions: {
@@ -32,6 +33,15 @@ module.exports = {
         //     },
         //   }),
         // ],
+      },
+      module: {
+        rules: [
+          {
+            test: /\.mjs$/,
+            include: /node_modules/,
+            type: 'javascript/auto',
+          },
+        ],
       },
     },
   },

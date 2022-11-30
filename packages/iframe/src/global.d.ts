@@ -12,5 +12,9 @@ declare module 'react' {
     css?: CSSProp
     id?: string
     markdown?: string
+    width?: number
+    height?: number
+    alt?: string
+    src?: string
   }
 }
