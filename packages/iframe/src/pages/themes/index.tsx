@@ -3,8 +3,9 @@ import { map } from 'rxjs/operators'
 import Button from 'react-bootstrap/Button'
 import { useObservable } from 'rxjs-hooks'
 import AddPluginModal from './add'
+import ImportModal from './import'
 import Plugin from './plugin'
-import { pluginsObservable, PluginProps, createPlugin, enablePlugin } from 'states/preferences'
+import { pluginsObservable, PluginProps, createPlugin, enablePlugin, importPlugins } from 'states/preferences'
 import { Routes, Route, Link } from 'react-router-dom'
 import Details from './details'
 import { motion } from 'framer-motion'
@@ -43,6 +44,50 @@ function Add() {
         </Button>
       </div>
       <AddPluginModal show={show} onHide={onHide} onOk={onOk} />
+    </>
+  )
+}
+
+function Export() {
+  const themes = useObservable(() => pluginsAsList$, [] as PluginProps[])
+  const onExport = useCallback(() => {
+    const a = document.createElement('a')
+    a.style.display = 'block'
+    const file = new Blob([JSON.stringify(themes, null, 2)], { type: 'application/json' })
+    a.href = URL.createObjectURL(file)
+    a.download = 'themes.json'
+    document.body.appendChild(a)
+    a.click()
+  }, [themes])
+
+  return (
+    <>
+      <Button variant="secondary" size="sm" onClick={onExport}>
+        Export
+      </Button>
+    </>
+  )
+}
+
+function Import() {
+  const [show, setShow] = useState<boolean>(false)
+  const onHide = useCallback(() => setShow(false), [])
+  const onOk = useCallback((themes: PluginProps[]) => {
+    importPlugins(
+      themes.reduce((a, c) => {
+        a[c.id] = c
+        return a
+      }, {} as Record<string, PluginProps>),
+      { replaceExists: true }
+    )
+    setShow(false)
+  }, [])
+  return (
+    <>
+      <Button variant="secondary" size="sm" onClick={() => setShow(true)}>
+        Import
+      </Button>
+      <ImportModal show={show} onHide={onHide} onOk={onOk} />
     </>
   )
 }
@@ -97,7 +142,17 @@ export function Themes() {
             Markdown Themes
           </span>
         </h1>
-        <Add />
+        <div
+          css={`
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: space-around;
+            gap: 8px;
+          `}>
+          <Add />
+          <Import />
+          <Export />
+        </div>
       </div>
 
       <div

@@ -72,7 +72,7 @@ function Details({ theme }: { theme: PluginProps }) {
       <div>{theme.builtin ? <Badge bg="dark">Builtin</Badge> : null}</div>
 
       <div>
-        theme url:{' '}
+        theme:{' '}
         <a
           href={theme.url}
           target="_blank"
@@ -90,7 +90,7 @@ function Details({ theme }: { theme: PluginProps }) {
           grid-template-rows: repeat(3, 1fr);
         `}>
         <div>
-          hightlight: <a href={`https://github.com/highlightjs/highlight.js/tree/main/src/styles/${theme.highlight}`}>{theme.highlight}</a>
+          highlight: <a href={`https://github.com/highlightjs/highlight.js/tree/main/src/styles/${theme.highlight}`}>{theme.highlight}</a>
         </div>
         {theme.updatedAt ? <span>updated at {theme.updatedAt}</span> : <span>created {dayjs(theme.createdAt).toNow()}</span>}
         <div>
