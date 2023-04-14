@@ -14,22 +14,19 @@ public:
 
 build-scripts-dev: cleanup public
 	export NODE_ENV=development; \
-	lerna run build
-	cp -R packages/chrome/dist/* dist
+	vite build -c vite.config.script.ts
 
 build-scripts: cleanup public
 	export NODE_ENV=production; \
-	lerna run build
-	cp -R packages/chrome/dist/* dist
+	vite build -c vite.config.script.ts
 
 dev: build-scripts-dev
 	export NODE_ENV=development; \
-	lerna run start:iframe
+	vite -c vite.config.ts
 
-build: build-scripts
+build: 
 	export NODE_ENV=production; \
-  lerna run build:iframe
-	cp -R packages/iframe/build dist/iframe
+  vite build -c vite.config.ts
 
 publish: build
 	lerna run publish
